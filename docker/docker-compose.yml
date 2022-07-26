@@ -1,0 +1,9 @@
+version: '3.3'
+
+services:
+  spider:
+    container_name: spider_container
+    build: .
+    volumes:
+      - ../src:/home
+    
