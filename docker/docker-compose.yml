@@ -1,9 +1,11 @@
-version: '3.3'
+version: '3.9'
 
 services:
   spider:
     container_name: spider_container
-    build: .
+    image: arachnida:latest
     volumes:
       - ../src:/home
+    stdin_open: true
+    tty: true
     
