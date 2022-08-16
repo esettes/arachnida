@@ -7,11 +7,11 @@ import bcolors as col
 
 def	main():
 	URL = "https://realpython.github.io/fake-jobs/"
-	URL = 'https://realpython.com/'
+	URL = 'https://www.hola.com/belleza/20220816215154/recomendaciones-productos-sephora-celebrities/'
 	folder_ = "img_folder"
 	req = requests.get(URL)
 
-	soup = BeautifulSoup(req.text, "lxml")
+	soup = BeautifulSoup(req.content, "lxml")
 
 	imgs = soup.findAll('img')
 	ObtainImages(imgs, folder_)
@@ -20,21 +20,23 @@ def	main():
 
 def ObtainImages(images, folder_name):
 	count = 0
-
-	for i, image in enumerate(images):
-		try:
-			img_link = image["data-srcset"]
-		except:
-			try:
-				img_link = image["data-src"]
-			except:
-				try:
-					img_link = image["data-fallback-src"]
-				except:
-					try:
-						img_link = image["src"]
-					except:
-						pass
+	i = 0
+	for image in images:
+		img = image.get('src')
+		print(img)
+		#try:
+		#	img_link = image["data-srcset"]
+		#except:
+		#	try:
+		#		img_link = image["data-src"]
+		#	except:
+		#		try:
+		#			img_link = image["data-fallback-src"]
+		#		except:
+		#			try:
+		#img_link = image["src"]
+		#			except:
+		#				pass
 	try:
 		r = requests.get(img_link).content
 		try:
@@ -45,6 +47,7 @@ def ObtainImages(images, folder_name):
 			count += 1
 	except:
 		pass
+	i += 1
 	if count == len(images):
 		print("All Images Downloaded!")
 	else:
