@@ -11,7 +11,8 @@ def	main():
 	URL = "https://realpython.github.io/fake-jobs/"
 	URL = 'https://www.hola.com/belleza/20220816215154/recomendaciones-productos-sephora-celebrities/'
 	url = 'https://github.com/rsalmei/alive-progress'
-	path_ = "img_folder4"
+	url = 'https://github.com/esettes'
+	path_ = "img_folder7"
 	#req = requests.get(URL)
 
 	#soup = BeautifulSoup(req.content, "lxml")
@@ -26,6 +27,9 @@ def	main():
 		# for each image, download it
 		download(img, path_)
 	#ObtainImages(imgs, folder_)
+
+
+
 
 def ObtainImages(images, folder_name):
 	count = 0
