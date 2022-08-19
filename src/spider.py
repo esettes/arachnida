@@ -1,70 +1,26 @@
 #!/usr/bin/python3
 import requests
 from bs4 import BeautifulSoup
-import utils.bcolors as col
+from utils.requestclass import Spider
 from utils.checker import download
 from utils.checker import get_all_images
-from utils.utils import progressbar
-
+from utils.progressbar import progressbar as progbar
+import utils.misc as msg
 
 def	main():
-	URL = "https://realpython.github.io/fake-jobs/"
-	URL = 'https://www.hola.com/belleza/20220816215154/recomendaciones-productos-sephora-celebrities/'
 	url = 'https://github.com/rsalmei/alive-progress'
-	url = 'https://github.com/esettes'
-	path_ = "img_folder7"
-	#req = requests.get(URL)
-
-	#soup = BeautifulSoup(req.content, "lxml")
-
-	#imgs = soup.findAll('img')
-	
-	#results = soup.findAll('img')
-	#WriteInNewFile('extracting_tests/req-text-lxml.txt', soup.get_text())
-	
+	url = 'https://github.com/trinib/trinib'
+	path_ = "img_folder8"
+	args = ''
+	levelTo = 0
+	pathToSaveImgs = ''
+	inputURL = ''
+	#spider = Spider(0, path_)
 	imgs = get_all_images(url)
-	for img in imgs:
-		# for each image, download it
+
+	for img in progbar(imgs, msg.DOWNLOAD):
 		download(img, path_)
-	#ObtainImages(imgs, folder_)
-
-
-
-
-def ObtainImages(images, folder_name):
-	count = 0
-	i = 0
-	for image in progressbar(range(len(images)), "Extracting images: ", len(images)):
-		for image in images:#, progressbar(range(15), "Extracting images: ", 40):
-			#img = image.get('src')
-			#print(img)
-			try:
-				img_link = image["data-srcset"]
-			except:
-				try:
-					img_link = image["data-src"]
-				except:
-					try:
-						img_link = image["data-fallback-src"]
-					except:
-						try:
-							img_link = image["src"]
-						except:
-							pass
-		try:
-			r = requests.get(img_link).content
-			try:
-				r = str(r, 'utf-8')
-			except UnicodeDecodeError:
-				with open(f"{folder_name}/images{i+1}.jpg", "wb+") as f:
-					f.write(r)
-				count += 1
-		except:
-			pass
-	if count == len(images):
-		print("All Images Downloaded!")
-	else:
-		print(f"Total {count} Images Downloaded Out of {len(images)}")
+	print(msg.DONE)
 
 
 
@@ -76,6 +32,7 @@ def ExtractURLs(filepath, soup):
 	with open("content_prettify3.txt", "w") as f:
 		for link in soup.find_all('a'):
 			f.writelines(link.get('href'))
+
 
 
 if __name__ == '__main__':
