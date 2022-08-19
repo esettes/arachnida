@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import requests
 from bs4 import BeautifulSoup
-import utils.bcolors as col
+import utils.misc as col
 from utils.checker import download
 from utils.checker import get_all_images
 from utils.utils import progressbar
@@ -12,7 +12,7 @@ def	main():
 	URL = 'https://www.hola.com/belleza/20220816215154/recomendaciones-productos-sephora-celebrities/'
 	url = 'https://github.com/rsalmei/alive-progress'
 	url = 'https://github.com/esettes'
-	path_ = "img_folder7"
+	path_ = "img_folder8"
 	#req = requests.get(URL)
 
 	#soup = BeautifulSoup(req.content, "lxml")

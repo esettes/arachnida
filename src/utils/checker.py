@@ -4,6 +4,7 @@ import requests
 from tqdm import tqdm
 import os
 from alive_progress import alive_bar
+import utils.misc as msg
 
 def is_valid(url):
     """
@@ -17,13 +18,17 @@ def get_all_images(url):
     """
     Returns all image URLs on a `url` array
     """
-    soup = bs(requests.get(url).content, "lxml")
+    getURL = requests.get(url)
+    msg.status_msg(str(getURL.status_code))
+    soup = bs(getURL.content, "lxml")
+    
     urls = []
     all = soup.find_all("img")
     for img in tqdm(soup.find_all("img"), "Extracting images"):
         img_url = img.attrs.get("src")
         if not img_url:
             continue
+
         img_url = urljoin(url, img_url)
         # if url have key-value, remove all after '?'
         try:
@@ -31,8 +36,10 @@ def get_all_images(url):
             img_url = img_url[:pos]
         except ValueError:
             pass
-        if is_valid(img_url):
-            urls.append(img_url)
+        if CheckImgExtension(img_url):
+            msg.info_msg(img_url)
+            if is_valid(img_url):
+                urls.append(img_url)
     return urls
 
 def download(url, pathname):
@@ -44,9 +51,7 @@ def download(url, pathname):
         os.makedirs(pathname)
     # download the body of response by chunk, not immediately
     response = requests.get(url, stream=True)
-    # get the total file size
     file_size = int(response.headers.get("Content-Length", 0))
-    # get the file name
     filename = os.path.join(pathname, url.split("/")[-1])
     f_name = filename[10:]
     # progress bar, changing the unit to bytes instead of iteration (default by tqdm)
@@ -58,3 +63,11 @@ def download(url, pathname):
                 progress.update(len(data))
     except:
         pass
+
+def CheckImgExtension(f_name):
+    if f_name.endswith('.gif') or f_name.endswith('.jpg') or \
+        f_name.endswith('.jpeg') or f_name.endswith('.png') or \
+            f_name.endswith('.bmp'):
+                return True
+    else:
+        return False

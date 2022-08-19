@@ -17,7 +17,7 @@ ULINE = '\033[4m'
 
 
 ''' MSG Prefixes '''
-INFO = f'{MAIN}Info{END}'
+INFO = f'{MAIN}Info {END}'
 KEY = f'{ORANGE}Keystroke{END}'
 PASTE = f'{BLUE}Paste{END}'
 WARN = f'{ORANGE}Warning{END}'
@@ -31,3 +31,10 @@ RESPONSE = f'{RED}Server-Response-Intercepted{END}'
 REQ = f'{BOLD}Request{END}'
 SPIDER = f'{B_PURPLE}{BOLD}Spider{END}{B_END}'
 CHANGE = f'{ORANGE}Input-Value-Changed{END}'
+STATUS_CODE = f'{ORANGE}{BOLD}Status code: [{END}{B_END}'
+
+def status_msg(s):
+	print(STATUS_CODE + s + ORANGE + BOLD + "]" + END + B_END)
+
+def info_msg(s):
+	print(INFO + s)
