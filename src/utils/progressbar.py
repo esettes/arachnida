@@ -1,5 +1,5 @@
 import sys
-import time    
+import utils.misc as msg
 
 def progressbar(it, prefix="", size=60, out=sys.stdout): # Python3.3+
     """
@@ -13,7 +13,7 @@ def progressbar(it, prefix="", size=60, out=sys.stdout): # Python3.3+
     count = len(it)
     def show(j):
         x = int(size*j/count)
-        print("{}[{}{}] {}/{}".format(prefix, "#"*x, "."*(size-x), j, count), # █
+        print("{}[{}{}] {}/{}".format(prefix, msg.LOAD*x, msg.DOT*(size-x), j, count), # █
                 end='\r', file=out, flush=True)
     show(0)
     for i, item in enumerate(it):

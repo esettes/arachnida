@@ -1,21 +1,21 @@
 #!/usr/bin/python3
 import requests
 from bs4 import BeautifulSoup
+from utils.requestclass import Spider
 from utils.checker import download
 from utils.checker import get_all_images
-from utils.utils import progressbar as progbar
+from utils.progressbar import progressbar as progbar
 import utils.misc as msg
 
 def	main():
-	URL = "https://realpython.github.io/fake-jobs/"
-	URL = 'https://www.hola.com/belleza/20220816215154/recomendaciones-productos-sephora-celebrities/'
 	url = 'https://github.com/rsalmei/alive-progress'
 	url = 'https://github.com/trinib/trinib'
 	path_ = "img_folder8"
-	#req = requests.get(URL)
-	#soup = BeautifulSoup(req.content, "lxml")
-	#imgs = soup.findAll('img')
-	
+	args = ''
+	levelTo = 0
+	pathToSaveImgs = ''
+	inputURL = ''
+	#spider = Spider(0, path_)
 	imgs = get_all_images(url)
 
 	for img in progbar(imgs, msg.DOWNLOAD):

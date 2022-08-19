@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup as bs
 import requests
 import os
 import utils.misc as msg
-from utils.utils import progressbar as progbar
+from utils.progressbar import progressbar as progbar
 
 def is_valid(url):
     """
@@ -60,3 +60,4 @@ def CheckImgExtension(f_name):
                 return True
     else:
         return False
+
