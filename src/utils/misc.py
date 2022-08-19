@@ -1,6 +1,19 @@
 ''' Colors '''
-MAIN = '\033[38;5;50m'
-GREEN = '\033[38;5;82m'
+BLUEAQUA = '\033[38;5;50m'
+BLUELIGHT = '\033[38;5;45m'
+GREENWEED = '\033[38;5;10m'
+
+PINKDARK = '\033[38;5;05m'
+GREY = '\033[38;5;110m'
+LIME = '\033[38;5;118m'
+BLACK = '\033[38;5;16m'
+BLUEDARK = '\033[38;5;22m'
+GREENLIGHTBRIGHT = '\033[38;5;120m'
+WHITE = '\033[38;5;15m'
+
+PURPLEDARK = '\033[38;5;99m'
+PURPLEDARK1 = '\033[38;5;95m'
+GREENLIGHT = '\033[38;5;82m'
 BLUE = '\033[0;38;5;12m'
 LPURPLE = '\033[0;38;5;201m'
 ORANGE = '\033[0;38;5;214m'
@@ -17,7 +30,7 @@ ULINE = '\033[4m'
 
 
 ''' MSG Prefixes '''
-INFO = f'{MAIN}Info {END}'
+INFO = f'{BLUEAQUA}Info {END}'
 KEY = f'{ORANGE}Keystroke{END}'
 PASTE = f'{BLUE}Paste{END}'
 WARN = f'{ORANGE}Warning{END}'
@@ -31,7 +44,11 @@ RESPONSE = f'{RED}Server-Response-Intercepted{END}'
 REQ = f'{BOLD}Request{END}'
 SPIDER = f'{B_PURPLE}{BOLD}Spider{END}{B_END}'
 CHANGE = f'{ORANGE}Input-Value-Changed{END}'
+
 STATUS_CODE = f'{ORANGE}{BOLD}Status code: [{END}{B_END}'
+RECOLECT_IMG =  f'{PURPLEDARK}Recolecting images:\t{END}'
+DOWNLOAD = f'{PURPLEDARK1}Downloading:\t{END}'
+DONE = f'{LIME}Done!{END}'
 
 def status_msg(s):
 	print(STATUS_CODE + s + ORANGE + BOLD + "]" + END + B_END)

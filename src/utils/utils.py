@@ -2,16 +2,24 @@ import sys
 import time    
 
 def progressbar(it, prefix="", size=60, out=sys.stdout): # Python3.3+
+    """
+    Custom progress bar.
+     Arguments:
+        `it` Number of items
+         `prefix` Informative message near bar
+        `size` The size of th bar
+         `out` Output 
+    """
     count = len(it)
     def show(j):
         x = int(size*j/count)
-        print("{}[{}{}] {}/{}".format(prefix, "█"*x, "."*(size-x), j, count), # █
+        print("{}[{}{}] {}/{}".format(prefix, "#"*x, "."*(size-x), j, count), # █
                 end='\r', file=out, flush=True)
     show(0)
     for i, item in enumerate(it):
         yield item
         show(i+1)
-    print("\n", flush=True, file=out)
+    print( flush=True, file=out)
 
 
 #for i in progressbar(range(15), "Computing: ", 40):
