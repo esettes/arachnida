@@ -54,7 +54,7 @@ ifeq  ($(OS),Darwin)
 COMP_CMD = docker-compose
 COMPOSE = ./docker/docker-compose.yml
 else
-COMP_CMD = docker-compose
+COMP_CMD = docker compose
 COMPOSE = ./docker/docker-compose.yml
 endif
 
