@@ -44,7 +44,8 @@ init()
 
 
 ````py
-When I'm in node 'AAA', this pass to 'Visited' list, and then I found 'A', 'M' and 'Q', that pass to 'Stack'.
+When I'm in node 'AA', this pass to 'Visited' list, and then I found 'A', 
+'M' and 'Q', that pass to 'Stack'.
 
                               ___ [AA] ____
 Visited                      |      |      |
