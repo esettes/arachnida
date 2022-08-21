@@ -25,7 +25,10 @@ def download(url):
     beforename =  url.rsplit('/', 1)[-2]
     #print(msg.BLUEAQUA + beforename.rsplit('/', 1)[-1] + msg.B_END + msg.END)
     response = requests.get(beforename)
+    print(msg.ORANGE + 'BEFORENAME: ' + beforename + msg.B_END + msg.END)
     img_name = beforename.rsplit('/', 1)[-1]
+    print(msg.GREENWEED + 'path + img_name: ' + path_ + '/' + img_name + msg.B_END + msg.END)
     with open(path_ + '/' + img_name, 'wb') as f:
+        print(msg.BLUEDARK + 'ok writed!'+ msg.B_END + msg.END)
         f.write(response.content)
 

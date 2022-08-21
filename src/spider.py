@@ -18,7 +18,7 @@ def	main():
 	#url = 'https://github.com/rsalmei/alive-progress'
 	url = 'https://github.com/trinib/trinib'
 	#url = 'https://realpython.github.io/fake-jobs/'
-	path_ = "img_folder5" #default
+	#path_ = "img_folder5" #default
 	args = SetArgs()
 	levelTo = 0
 	inputURL = ''
@@ -56,10 +56,10 @@ def	main():
 	count = 0
 	with ThreadPoolExecutor(10) as executor:
 		for img in progbar(spider.get_stackURLs(), msg.DOWNLOAD):
-			print(img)
-			executor.submit(download, CleanURLToQueue(img))
+			executor.submit(download, img)
+			time.sleep(0.01)
+			print(msg.PINKDARK + 'THREADPOOL IMG: ' + img)
 	
-	print(f'number of images downloaded: {count}')
 
 	#with ThreadPoolExecutor(10) as executor:
 	#	res = executor.map(download, spider.get_stackURLs())

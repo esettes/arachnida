@@ -8,23 +8,6 @@ from bs4 import BeautifulSoup as bs
 from urllib.parse import urljoin, urlparse
 from utils.utils import progressbar as progbar
 
-"""
-Spider urls dictionary. Obtain all level urls in a branched way.
-
-e.
-
-Dict = {} = obtain_level_ursl(url, levelTo)
-	for key names use [level-number of url]
-	e. if I have 3 urls in level 0 then their key-values are:
-		{'0-0':'url-one',
-		 '0-1':'url-two', 
-		 '0-2':'url-three'}
-	if my url-two have 2 urls then:
-		['0-0':'url-one', '0-1':'url-two',, '0-2':'url-three']
-
-print (Dict)
-
-"""
 
 class Spider(): 
 	"""
@@ -42,6 +25,9 @@ class Spider():
 		#self.imgs = imgs
 		self.status_code = 0
 		self.stack_URLs = []	# imgs
+
+		self.dict_stack_imgs = {}	# imgs
+
 		self.visited_URLs = []	#imgs
 		self.queue_imgs = []
 		self.__current_Level = 0
@@ -69,6 +55,14 @@ class Spider():
 			self.queue_imgs.append(CleanURLToQueue(q))
 		print(f'queue: {self.queue_imgs}')
 			
+	def add_dict_stack_imgs(self, k, val):
+		self.dict_stack_imgs = { k : val }
+	
+	def get_dict_stack_imgs_value(self):
+		return self.dict_stack_imgs[1]
+	
+	def get_dict_stack_imgs_key(self):
+		return self.dict_stack_imgs[0]
 
 	def get_level(self):
 		return self.levelTo
@@ -214,10 +208,16 @@ def get_all_images2(object):
 		except ValueError:
 			pass
 		if CheckImgExtension(img_url):
-			if not img_url in object.get_stackURLs():
+			print(msg.BLUEAQUA + 'img_url in get_all_imgs: ' + img_url + msg.B_END + msg.END)
+			#print(msg.GREENWEED + 'object.get_stackURLs(): ' + str(object.get_stackURLs()) + msg.B_END + msg.END)
+			#if not img_url in object.get_stackURLs():
+			check_format = img_url + '/' + str(object.get_pathname())
+			if not check_format in object.get_stackURLs():
 				if IsValid(img_url):
-					img_url = img_url + '/' + str(object.get_pathname()) # ugly, sad
-					object.add_to_stack(img_url)
+					#img_url = img_url + '/' + str(object.get_pathname()) # ugly, sad
+					object.add_to_stack(check_format)
+					#object.add_dict_stack_imgs(str(object.get_pathname()), img_url)
+					print(f'img value: {check_format}')
 	msg.info_msg('Removed ' + str(len(all) - len(object.get_stackURLs())) + ' images.')
 
 
