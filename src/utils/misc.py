@@ -56,6 +56,7 @@ DOT = f'{DOTLOAD}#{END}'
 LOAD = f'{BOLD}{GREENLOAD}#{END}{B_END}'
 STATUS_CODE = f'{ORANGE}{BOLD}>Status code: [{END}{B_END}'
 RECOLECT_IMG =  f'{LILA}Recolecting images:\t{END}'
+RECOLECT_HREF =  f'{LILA}Recolecting links:\t{END}'
 DOWNLOAD = f'{LILA}Downloading:\t{END}'
 DONE = f'{GREENLOAD}\nDone!{END}'
 

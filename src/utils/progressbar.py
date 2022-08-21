@@ -11,14 +11,20 @@ def progressbar(it, prefix="", size=60, out=sys.stdout): # Python3.3+
          `out` Output 
     """
     count = len(it)
-    def show(j):
-        x = int(size*j/count)
-        print("{}[{}{}] {}/{}".format(prefix, msg.LOAD*x, msg.DOT*(size-x), j, count), # █
-                end='\r', file=out, flush=True)
+    try:
+        def show(j):
+            x = int(size*j/count)
+            print("{}[{}{}] {}/{}".format(prefix, msg.LOAD*x, msg.DOT*(size-x), j, count), # █
+                   end='\r', file=out, flush=True)
+    except Exception:
+        pass
     show(0)
-    for i, item in enumerate(it):
-        yield item
-        show(i+1)
+    try:
+        for i, item in enumerate(it):
+            yield item
+            show(i+1)
+    except Exception:
+        pass
     print( flush=True, file=out)
 
 

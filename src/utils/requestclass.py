@@ -1,6 +1,9 @@
 import requests
 import os
+from utils.checker import download, get_all_images
 import utils.misc as msg
+import concurrent.futures
+from asyncio import Future
 from bs4 import BeautifulSoup as bs
 from urllib.parse import urljoin, urlparse
 from utils.progressbar import progressbar as progbar
@@ -18,8 +21,10 @@ class Spider():
 		self.levelTo = levelTo
 		self.pathname = pathname
 		self.imgs = imgs
-		self.__levelURLs = [] # Saves the extracted hrefs of current level
-		self.get_all_images(url)
+		self.__currentLevel = 0
+		self.__currentLevelURLs = [] # Saves the extracted hrefs of current level
+		self.nextLevelURLs = []
+#		self.get_all_images(url)
 
 	
 	def set_level(self, lev):
@@ -35,12 +40,10 @@ class Spider():
 		return self.pathname
 	
 	def set_levelURLs(self, url):
-		# append to __levelURLs list all extracted level urls
+		# append to __currentLevelURLs list all extracted level urls
 		print('ok')
 
-	def start_scrap(self):
-		for url in self.__levelURLs:
-			self.get_all_images(url)
+	
 
 	def get_all_images(self, url):
 		"""
@@ -96,3 +99,17 @@ def CheckImgExtension(f_name):
 				return True
 	else:
 		return False
+
+def start_scrap(imgs):
+		#imgs = get_all_images(url)
+		threads = min(10, len(imgs))
+		#for img in progbar(imgs, msg.DOWNLOAD):
+		#	download(img, path_)
+		try:
+			with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+				res = executor.map(download, imgs)
+				count = list(res)
+				for i in progbar(count, msg.DOWNLOAD):
+					r = 'main: results: {}'.format(res)
+		except Exception:
+			pass
