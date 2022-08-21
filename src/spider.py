@@ -2,13 +2,12 @@
 import requests
 import time
 from bs4 import BeautifulSoup
-from utils.requestclass import Spider
-from utils.checker import download, get_level_urls
-from utils.checker import get_all_images
-from utils.progressbar import progressbar as progbar
+from utils.requestclass import Spider, get_all_images2, CleanURLToQueue
+from utils.checker import download
+from utils.utils import SetArgs, progressbar as progbar
 import utils.misc as msg
-import concurrent.futures
-from asyncio import Future
+from concurrent.futures import ThreadPoolExecutor
+from asyncio import Future, as_completed
 import asyncio
 from typing import List
 
@@ -16,38 +15,80 @@ def	main():
 	
 	
 	start_time = time.time()
-	url = 'https://github.com/rsalmei/alive-progress'
+	#url = 'https://github.com/rsalmei/alive-progress'
 	url = 'https://github.com/trinib/trinib'
 	#url = 'https://realpython.github.io/fake-jobs/'
-	path_ = "img_folder8"
-	args = ''
+	path_ = "img_folder5" #default
+	args = SetArgs()
 	levelTo = 0
-	pathToSaveImgs = ''
 	inputURL = ''
-	#spider = Spider(0, path_)
+	spider = Spider(levelTo, url)
 	
-	imgs = get_all_images(url)
+	#spider.set_pathname(path_)
+	if args.path != 'data':
+		print(f'{msg.BLUEAQUA}press new path: {args.path}')
+		spider.set_pathname(args.path)
+	if args.recursive and args.level == 0:
+		# check if is valid link here(?)
+		#spider.set_url(args.recursive)
+		spider.set_url(url)
+	if args.recursive and args.level != 0:
+		#spider.set_url(args.recursive)
+		spider.set_url(url)
+		spider.set_level(args.level)
+	
+	
+	print(msg.GREENLIGHTBRIGHT)
+	print("Spider object: " + msg.END)
+	print('url: ' + spider.get_url())
+	print(spider.get_pathname())
+	print('level: ' + str(spider.get_level()))
+
+	#return
+
+	
+	get_all_images2(spider)
+	#imgs = get_all_images(spider, url)
 	#extractedURLs = get_level_urls(url)
 	#for ext in extractedURLs:
 	#	print(ext)
-	threads = min(10, len(imgs))
-	print(f'threads; {threads}')
+	#try:
+	count = 0
+	with ThreadPoolExecutor(10) as executor:
+		for img in progbar(spider.get_stackURLs(), msg.DOWNLOAD):
+			print(img)
+			executor.submit(download, CleanURLToQueue(img))
+	
+	print(f'number of images downloaded: {count}')
+
+	#with ThreadPoolExecutor(10) as executor:
+	#	res = executor.map(download, spider.get_stackURLs())
+	#	count = list(res)
+	#	for i in progbar(count, msg.DOWNLOAD):
+	#		r = 'main: results: {}'.format(res)
+	#except Exception:
+	#	pass
 	#for img in progbar(imgs, msg.DOWNLOAD):
 	#	download(img, path_)
-	try:
-		with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
-			res = executor.map(download, imgs)
-			count = list(res)
-			for i in progbar(count, msg.DOWNLOAD):
-				r = 'main: results: {}'.format(res)
-	except Exception:
-		pass
+	#try:
+	#	with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+	#		res = executor.map(download, imgs)
+	#		count = list(res)
+	#		print(msg.PURPLE)
+	#		print(count)
+	#		for i in progbar(count, msg.DOWNLOAD):
+	#			r = 'main: results: {}'.format(res)
+	#except Exception:
+	#	pass
 	
 	print(msg.DONE)
 	print("--- %s seconds ---" % (time.time() - start_time))
 
-def get_progress(futures: List[Future]) -> int:
-    return sum([f.done() for f in futures])
+
+
+
+
+
 
 def WriteInNewFile(filepath, content_):
 	with open(filepath, "w") as f:

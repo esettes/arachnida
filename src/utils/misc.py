@@ -55,6 +55,7 @@ CHANGE = f'{ORANGE}Input-Value-Changed{END}'
 DOT = f'{DOTLOAD}#{END}'
 LOAD = f'{BOLD}{GREENLOAD}#{END}{B_END}'
 STATUS_CODE = f'{ORANGE}{BOLD}>Status code: [{END}{B_END}'
+BAD_STATUS_CODE = f'{B_RED}>Status code: [{END}{B_END}'
 RECOLECT_IMG =  f'{LILA}Recolecting images:\t{END}'
 RECOLECT_HREF =  f'{LILA}Recolecting links:\t{END}'
 DOWNLOAD = f'{LILA}Downloading:\t{END}'
@@ -62,6 +63,9 @@ DONE = f'{GREENLOAD}\nDone!{END}'
 
 def status_msg(s):
 	print(STATUS_CODE + s + ORANGE + BOLD + "]" + END + B_END)
+
+def bad_status_code(s):
+	print(BAD_STATUS_CODE + s + B_RED + "]" + END + B_END)
 
 def info_msg(s):
 	print(GREY246 + s + END)
