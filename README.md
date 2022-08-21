@@ -97,7 +97,7 @@ My download function only recieves one argument, the url to download. The anothe
 
 ````py
 with ThreadPoolExecutor(10) as executor:
-	executor.map(download, iterable)
+	executor.map(download, urls)
 ````
 
 [map()](https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.map) unifies what would be a for loop in a single statement that returns an iterable object, which you can use later to analize items or check processes results.
@@ -112,8 +112,8 @@ In my case I want to have more control over tasks while its being processed, not
 
 ````py
 with ThreadPoolExecutor(10) as executor:
-    for img in progbar(spider.get_stackURLs(), 'Downloading '):
-        executor.submit(download, img)
+    for url in progbar(urls, 'Downloading '):
+        executor.submit(download, url)
 ````
 
 <br>
