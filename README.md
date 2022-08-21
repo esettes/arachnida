@@ -22,6 +22,7 @@ Recursively images download from indicated site.
 ````
 
 ### Depth First Search algorithm
+* * *
 
 [Depth First Search](https://en.wikipedia.org/wiki/Depth-first_search) algorithm to obtain links of all links extracted of main URL passed to program.
 
@@ -44,7 +45,7 @@ init()
 
 
 ````py
-When I'm in node 'AA', this pass to 'Visited' list, and then I found 'A', 
+When I'm in node 'AAA', this pass to 'Visited' list, and then I found 'A', 
 'M' and 'Q', that pass to 'Stack'.
 
                               ___ [AA] ____
@@ -80,11 +81,19 @@ Stack                         'Q' which is the last node.
 [][][][][]                 
 
 ````
+<br>
 
-For each image url, executes download(). Using [ThreadPoolExecutor](https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor) subclass, the execution speed increases significantly. This is an Executor subclass, an abstract class used to make asyncronously calls. Map() recieves two arguments, the task to apply to items (pass function without parameters) and the list of items to iterate and apply the task.
+### ThreadPoolExecutor, run processes asyncronously
+* * *
 
-My download function only recieves one argument, the url to download. The another arg. of map() is the list of urls that in other way I iterate in a for loop.
+For each image url, executes download(). Using [ThreadPoolExecutor](https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor) subclass, the execution speed increases significantly. This is an Executor subclass, an abstract class used to make asyncronously calls using specific number of threads, that are passed like an argument to class. 
 
+<br>
+
+>map()
+
+Map() recieves two arguments, the task for apply to items (pass task without parameters) and the list of items to iterate and apply the task.
+My download function only recieves one argument, the url to download. The another argument of map() is the list of urls that in other way I iterate in a for loop.
 
 ````py
 with ThreadPoolExecutor(10) as executor:
@@ -93,8 +102,13 @@ with ThreadPoolExecutor(10) as executor:
 
 [map()](https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.map) unifies what would be a for loop in a single statement that returns an iterable object, which you can use later to analize items or check processes results.
 
+<br>
+
+>submit()
+
 In my case I want to have more control over tasks while its being processed, not later. So for that, Executor have another function to run taks asyncronously, [submit()](https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.submit), which executes task one by one, for each item.
 
+<br>
 
 ````py
 with ThreadPoolExecutor(10) as executor:
@@ -102,4 +116,16 @@ with ThreadPoolExecutor(10) as executor:
         executor.submit(download, img)
 ````
 
+<br>
+
 This method allows me to manage each task, for example, including a loading bar to see execution progress, or handle events like finished or running task or errors during Executor run.
+
+<br><br>
+
+#### **More info**
+* * *
+
+[ThreadPoolExecutor, map() vs submit()](https://superfastpython.com/threadpoolexecutor-map-vs-submit/)
+
+[Thread carefully: an introduction to concurrent Python](https://hackaday.com/2018/12/18/thread-carefully-an-introduction-to-concurrent-python/)
+
