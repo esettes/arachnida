@@ -47,13 +47,15 @@ class Spider():
 	def set_pathname(self, p):
 		path_ = self.CreateDownloadFolder(p)
 		if path_ != None:
-			print(f'success!: {p}')
 			self.pathname = path_
 
 	def set_queue_imgs(self, urls):
 		for q in urls:
 			self.queue_imgs.append(CleanURLToQueue(q))
 		print(f'queue: {self.queue_imgs}')
+	
+	def get_queue_imgs(self):
+		return self.get_queue_imgs
 			
 	def add_dict_stack_imgs(self, k, val):
 		self.dict_stack_imgs = { k : val }
@@ -99,13 +101,9 @@ class Spider():
 
 
 	def CreateDownloadFolder(self, pathname):
-	#pathname = "img_folder5"
-		print(f'pathname: {pathname}')
 		if not os.path.isdir(pathname):
-			p = os.makedirs(pathname)
-			print(f'pathname: {p}')
+			os.makedirs(pathname)
 		return pathname
-
 
 
 
@@ -191,7 +189,6 @@ def get_all_images2(object):
 	"""
 	Returns all valid images(jpg, jpeg, gif, bmp) URLs on a `url` array
 	"""
-	print(f'get_url(): {object.get_url()}')
 	getURL = requests.get(object.get_url())
 	msg.status_msg(str(getURL.status_code))
 	soup = bs(getURL.content, "lxml")
@@ -208,16 +205,10 @@ def get_all_images2(object):
 		except ValueError:
 			pass
 		if CheckImgExtension(img_url):
-			print(msg.BLUEAQUA + 'img_url in get_all_imgs: ' + img_url + msg.B_END + msg.END)
-			#print(msg.GREENWEED + 'object.get_stackURLs(): ' + str(object.get_stackURLs()) + msg.B_END + msg.END)
-			#if not img_url in object.get_stackURLs():
 			check_format = img_url + '/' + str(object.get_pathname())
 			if not check_format in object.get_stackURLs():
 				if IsValid(img_url):
-					#img_url = img_url + '/' + str(object.get_pathname()) # ugly, sad
 					object.add_to_stack(check_format)
-					#object.add_dict_stack_imgs(str(object.get_pathname()), img_url)
-					print(f'img value: {check_format}')
 	msg.info_msg('Removed ' + str(len(all) - len(object.get_stackURLs())) + ' images.')
 
 

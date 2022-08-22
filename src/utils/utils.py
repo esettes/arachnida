@@ -7,11 +7,8 @@ from argparse import RawTextHelpFormatter
 def progressbar(it, prefix="", size=60, out=sys.stdout): # Python3.3+
     """
     Custom progress bar.
-     Arguments:
-        `it` Number of items
-         `prefix` Informative message near bar
-        `size` The size of th bar
-         `out` Output 
+     Arguments: `it` Number of items; `prefix` Informative message near bar;
+ `size` The size of th bar; `out` Output 
     """
     count = len(it)
     try:
