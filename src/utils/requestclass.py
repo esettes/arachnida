@@ -93,8 +93,8 @@ class Spider():
 		self.visited_URLs.append(url)
 
 	def remove_from_stack_and_add_to_visit(self, url):
-		""" Pops `url` of stack and appends it to visited."""
-		p = self.stack_URLs.pop()
+		""" Pops first `url` of stack and appends it to visited."""
+		p = self.stack_URLs.pop(0)
 		self.visited_URLs.append(p)
 
 
@@ -113,12 +113,14 @@ def IsValid(url):
 	and squeme(protocol) are there.
 	"""
 	parsed = urlparse(url)
+	#if bool(parsed.netloc) and bool(parsed.scheme):
+		#print(f'{msg.ORANGEDARK} Parse: {msg.END}{msg.GREY246}{parsed}{msg.END}')
 	return bool(parsed.netloc) and bool(parsed.scheme)
 
 def CheckImgExtension(f_name):
 	if f_name.endswith('.gif') or f_name.endswith('.jpg') or \
 		f_name.endswith('.jpeg') or f_name.endswith('.png') or \
-			f_name.endswith('.bmp'):
+			f_name.endswith('.bmp') or f_name.endswith('.avif'):
 				return True
 	else:
 		return False
@@ -154,7 +156,7 @@ def CheckStatusCode(url):
 	status = url.status_code
 	if status >= 200 and status < 300:
 		return True
-	msg.bad_status_code(str(status))
+	msg.status_msg(str(status))
 	return False
 
 
@@ -190,25 +192,27 @@ def get_all_images2(object):
 	Returns all valid images(jpg, jpeg, gif, bmp) URLs on a `url` array
 	"""
 	getURL = requests.get(object.get_url())
-	msg.status_msg(str(getURL.status_code))
-	soup = bs(getURL.content, "lxml")
-	all = soup.find_all("img")
-	for img in progbar(all, msg.RECOLECT_IMG):
-		img_url = img.attrs.get("src")
-		if not img_url:
-			continue
-		img_url = urljoin(object.get_url(), img_url)
-		# if url have key-value, remove all after '?'
-		try:
-			pos = img_url.index("?")
-			img_url = img_url[:pos]
-		except ValueError:
-			pass
-		if CheckImgExtension(img_url):
-			check_format = img_url + '/' + str(object.get_pathname())
-			if not check_format in object.get_stackURLs():
-				if IsValid(img_url):
-					object.add_to_stack(check_format)
+	if CheckStatusCode(getURL) != False:
+		soup = bs(getURL.content, "lxml")
+		all = soup.find_all("img")
+		for img in progbar(all, msg.RECOLECT_IMG):
+			img_url = img.attrs.get("src")
+			if not img_url:
+				continue
+			img_url = urljoin(object.get_url(), img_url)
+			# if url have key-value, remove all after '?'
+			try:
+				pos = img_url.index("?")
+				img_url = img_url[:pos]
+			except ValueError:
+				pass
+			if CheckImgExtension(img_url):
+				check_format = img_url + '/' + str(object.get_pathname())
+				if not check_format in object.get_stackURLs():
+					if IsValid(img_url):
+						object.add_to_stack(check_format)
 	msg.info_msg('Removed ' + str(len(all) - len(object.get_stackURLs())) + ' images.')
 
-
+def FormatValidUrl(url):
+	# Apply url._replace(scheme='http') if in input is not set
+	url._replace(scheme='http')

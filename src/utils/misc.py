@@ -69,3 +69,6 @@ def bad_status_code(s):
 
 def info_msg(s):
 	print(GREY246 + s + END)
+
+def lightinfo_msg(s):
+	print(f'{BLUEAQUA} {s}')
