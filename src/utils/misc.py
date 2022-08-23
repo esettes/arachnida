@@ -62,6 +62,7 @@ DOWNLOAD = f'{LILA}Downloading:\t{END}'
 DONE = f'{GREENLOAD}\nDone!{END}'
 
 def status_msg(s):
+	print(flush=True)
 	print(STATUS_CODE + s + ORANGE + BOLD + "]" + END + B_END)
 
 def bad_status_code(s):

@@ -9,6 +9,7 @@ from urllib.parse import urljoin, urlparse
 from utils.utils import progressbar as progbar
 
 
+
 class Spider(): 
 	"""
 	Main class for web scraping. 
@@ -93,27 +94,6 @@ def CheckImgExtension(f_name):
 	else:
 		return False
 
-def start_scrap(imgs):
-	#imgs = get_all_images(url)
-	threads = min(10, len(imgs))
-	#for img in progbar(imgs, msg.DOWNLOAD):
-	#	download(img, path_)
-	try:
-		with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
-			res = executor.map(Spider.download, imgs)
-			count = list(res)
-			for i in progbar(count, msg.DOWNLOAD):
-				r = 'main: results: {}'.format(res)
-	except Exception:
-		pass
-
-def RecursiveSearch(object):
-	currentLevel = 0
-	if currentLevel <= object.get_level():
-		#start get all hrefs
-		print('ok')
-
-
 def CleanURLToQueue(url):
 	"""
 	Removes the trick at the final of url and return `url` cleaned. 
@@ -128,28 +108,6 @@ def CheckStatusCode(url):
 	return False
 
 
-def GetNodeURLs(url):
-	"""
-	Extracts the current level hrefs.
-
-	Return:
-		`hrefs` list
-	"""
-	getURL = requests.get(url)
-	if CheckStatusCode(getURL) == False:
-		return
-	soup = bs(getURL.content, "lxml")
-	hrefs = []
-	all = soup.find_all('a')
-	for h in progbar(all, msg.RECOLECT_HREF):
-		obtain = h.get('href')
-		if not obtain in hrefs:
-			hrefs.append(obtain)
-	msg.info_msg('Removed ' + str(len(all) - len(hrefs)) + ' hrefs.')
-	return hrefs
-
-
-
 
 def CheckURLFormat():
 	#Check what king of url inputs user
@@ -159,53 +117,58 @@ def get_all_images_thread(pathname, stackURLs, imgList):
 	"""
 	Returns all valid images(jpg, jpeg, gif, bmp) URLs on a `url` array
 	"""
-	for url in progbar(stackURLs, 'Process-2: '):
-		getURL = requests.get(url)
-		if CheckStatusCode(getURL) != False:
-			soup = bs(getURL.content, "lxml")
-			all = soup.find_all("img")
-			for img in all:
-				img_url = img.attrs.get("src")
-				if not img_url:
-					continue
-				img_url = urljoin(url, img_url)
-				try:
-					pos = img_url.index("?")
-					img_url = img_url[:pos]
-				except ValueError:
-					pass
-				if CheckImgExtension(img_url):
-					
-					check_format = img_url + '/' + str(pathname)
-					#print(f'check formnat: {check_format} and img_url: {img_url}')
-					if not check_format in stackURLs:
-						if IsValid(img_url):
-							imgList.append(check_format)
+	with open('log/logfile-thread-2_5', 'w') as f:
+		for url in progbar(stackURLs, 'Process-2: '):
+			getURL = requests.get(url)
+			if CheckStatusCode(getURL) != False:
+				soup = bs(getURL.content, "lxml")
+				all = soup.find_all("img")
+				for img in all:
+					img_url = img.attrs.get("src")
+					if not img_url:
+						continue
+					img_url = urljoin(url, img_url)
+					try:
+						pos = img_url.index("?")
+						img_url = img_url[:pos]
+					except ValueError:
+						pass
+					if CheckImgExtension(img_url):
+						
+						check_format = img_url + '/' + str(pathname)
+						#print(f'check formnat: {check_format} and img_url: {img_url}')
+						if not check_format in stackURLs and not check_format in imgList:
+							if IsValid(img_url):
+								imgList.append(check_format)
+								#stackURLs.append(check_format)
+								f.write(img_url + '   ///////   with folder: ' + check_format +  '\n')
 
 def get_all_images2(object):
 	"""
 	Returns all valid images(jpg, jpeg, gif, bmp) URLs on a `url` array
 	"""
-	for url in progbar(object.get_stackURLs(), msg.PURPLEDARK + 'Obtaining img links: '):
-		getURL = requests.get(url)
-		if CheckStatusCode(getURL) != False:
-			soup = bs(getURL.content, "lxml")
-			all = soup.find_all("img")
-			for img in all:
-				img_url = img.attrs.get("src")
-				if not img_url:
-					continue
-				img_url = urljoin(url, img_url)
-				try:
-					pos = img_url.index("?")
-					img_url = img_url[:pos]
-				except ValueError:
-					pass
-				if CheckImgExtension(img_url):
-					check_format = img_url + '/' + str(object.get_pathname())
-					if not check_format in object.get_stackURLs():
-						if IsValid(img_url):
-							object.add_img_url(check_format)
+	with open('log/logfie-thread-1_0', 'w') as f:
+		for url in progbar(object.get_stackURLs(), msg.PURPLEDARK + 'Obtaining img links: '):
+			getURL = requests.get(url)
+			if CheckStatusCode(getURL) != False:
+				soup = bs(getURL.content, "lxml")
+				all = soup.find_all("img")
+				for img in all:
+					img_url = img.attrs.get("src")
+					if not img_url:
+						continue
+					img_url = urljoin(url, img_url)
+					try:
+						pos = img_url.index("?")
+						img_url = img_url[:pos]
+					except ValueError:
+						pass
+					if CheckImgExtension(img_url):
+						check_format = img_url + '/' + str(object.get_pathname())
+						if not check_format in object.get_stackURLs():
+							if IsValid(img_url):
+								object.add_img_url(check_format)
+								f.write(img_url + '\n')
 
 def FormatValidUrl(url):
 	# Apply url._replace(scheme='http') if in input is not set

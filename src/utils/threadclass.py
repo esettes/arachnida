@@ -22,26 +22,28 @@ class CustomThread(Thread):
         # block for a moment
         sleep(1)
         # store data in an instance variable
-        self.value = 'Hello from a new thread'
-        for url in progbar(self.spider.get_stackURLs(), 'Process-1: '):
-            getURL = requests.get(url)
-            if CheckStatusCode(getURL) != False:
-                soup = bs(url, "lxml")
-                all = soup.find_all("img")
-                for img in all:
-                    img_url = img.attrs.get("src")
-                    if not img_url:
-                        continue
-                    img_url = urljoin(url, img_url)
-                    try:
-                        pos = img_url.index("?")
-                        img_url = img_url[:pos]
-                    except ValueError:
-                        pass
-                    if CheckImgExtension(img_url):
-                        check_format = img_url + '/' + str(self.spider.get_pathname())
-                        print(check_format)
-                        if not check_format in self.spider.get_stackURLs():
-                            if IsValid(img_url):
-                                self.img_list.append(check_format)
+        with open('log/logfile-thread-1_5', 'w') as f:
+            for url in progbar(self.spider.get_stackURLs(), 'Process-1: '):
+                getURL = requests.get(url)
+                if CheckStatusCode(getURL) != False:
+                    soup = bs(url, "lxml")
+                    all = soup.find_all("img")
+                    for img in all:
+                        img_url = img.attrs.get("src")
+                        if not img_url:
+                            continue
+                        img_url = urljoin(url, img_url)
+                        try:
+                            pos = img_url.index("?")
+                            img_url = img_url[:pos]
+                        except ValueError:
+                            pass
+                        if CheckImgExtension(img_url):
+                            check_format = img_url + '/' + str(self.spider.get_pathname())
+                            print(check_format)
+                            if not check_format in self.spider.get_stackURLs() and not check_format in self.img_list:
+                                f.write(check_format + '\n')
+                                if IsValid(img_url):
+                                    self.img_list.append(check_format)
+                                    #self.spider.get_stackURLs().append(check_format)
         

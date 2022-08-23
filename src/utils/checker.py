@@ -1,19 +1,4 @@
-from urllib.parse import urljoin, urlparse
-from bs4 import BeautifulSoup as bs
 import requests
-import os
-import utils.misc as msg
-from utils.utils import progressbar as progbar
-from utils.requestclass import Spider
-
-def is_valid(url):
-    """
-	Checks whether `url` is a valid URL. Check netloc(domain name)
-	and squeme(protocol) are there.
-    """
-    parsed = urlparse(url)
-    return bool(parsed.netloc) and bool(parsed.scheme)
-
 
 def download(url):#, path_):
     """

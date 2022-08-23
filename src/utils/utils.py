@@ -1,3 +1,4 @@
+from fileinput import close
 import sys
 import utils.misc as msg
 import argparse
@@ -42,25 +43,15 @@ If indicate flag but not set a value for it, the default val is 5")
     args = parser.parse_args()
     return args
 
+def set_log(listType, level, url):
+    file = open('log/logfile_', 'r')
+    lines = file.readlines()
 
-
-
-def get_level_urls(url):
-    """
-    Extracts the current level hrefs
-
-    Return:
-        `hrefs` list
-    """
-    getURL = requests.get(url)
-    msg.status_msg(str(getURL.status_code))
-    soup = bs(getURL.content, "lxml")
-    hrefs = []
-    all = soup.find_all('a')
-
-    for h in progbar(all, msg.RECOLECT_HREF):
-        obtain = h.get('href')
-        if not obtain in hrefs:
-            hrefs.append(obtain)
-    msg.info_msg('Removed ' + str(len(all) - len(hrefs)) + ' hrefs.')
-    return hrefs
+    i = len(lines)
+    s = 'L[' + str(level) + '] ' + listType + ': ' + url + '\n'
+    lines[i + 1] = s
+    with open('log/logfile_', 'w') as f:
+    #if f.readline in ['\n', '\r\n']:
+        f.writelines(lines)
+        file.close
+        return
