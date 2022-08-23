@@ -28,6 +28,10 @@ class URLlists():
         """ Adds `url` at the head of list."""
         self.stack.insert(0, url)
 
+    def pop_item(self):
+        p = self.stack.pop(0)
+        return p
+
     def add_to_visited(self, url):
         """ Adds `url` at the end of list."""
         self.visited.append(url)

@@ -25,14 +25,7 @@ class Spider():
 		#self.imgs = imgs
 		self.status_code = 0
 		self.stack_URLs = []	# imgs
-
-		self.dict_stack_imgs = {}	# imgs
-
-		self.visited_URLs = []	#imgs
-		self.queue_imgs = []
-		self.__current_Level = 0
-		self.__url_dictionary = {}
-#		self.get_all_images(url)
+		self.img_URLs = []
 
 	
 	def set_level(self, lev):
@@ -40,62 +33,37 @@ class Spider():
 	
 	def set_url(self, u):
 		self.url = u
-    
-	def set_status_code(self, sc):
-		self.status_code = sc
 
 	def set_pathname(self, p):
 		path_ = self.CreateDownloadFolder(p)
 		if path_ != None:
 			self.pathname = path_
 
-	def set_queue_imgs(self, urls):
-		for q in urls:
-			self.queue_imgs.append(CleanURLToQueue(q))
-		print(f'queue: {self.queue_imgs}')
-	
-	def get_queue_imgs(self):
-		return self.get_queue_imgs
-			
-	def add_dict_stack_imgs(self, k, val):
-		self.dict_stack_imgs = { k : val }
-	
-	def get_dict_stack_imgs_value(self):
-		return self.dict_stack_imgs[1]
-	
-	def get_dict_stack_imgs_key(self):
-		return self.dict_stack_imgs[0]
-
 	def get_level(self):
 		return self.levelTo
 
 	def get_url(self):
 		return self.url
-	
-	def get_status_code(self):
-		return self.status_code
 
 	def get_pathname(self):
 		return self.pathname
 	
+	def set_stackURLs(self, mylist):
+		self.stack_URLs = mylist
+
 	def get_stackURLs(self):
 		return self.stack_URLs
 
-	def get_visitedURLs(self):
-		return self.visited_URLs
-
 	def add_to_stack(self, url):
-		""" Adds `url` at the head of stack."""
-		self.stack_URLs.insert(0, url)
+		""" Adds `url` to stack."""
+		self.stack_URLs.append(url)
 	
-	def add_to_visited(self, url):
-		""" Adds `url` at the end."""
-		self.visited_URLs.append(url)
-
-	def remove_from_stack_and_add_to_visit(self, url):
-		""" Pops first `url` of stack and appends it to visited."""
-		p = self.stack_URLs.pop(0)
-		self.visited_URLs.append(p)
+	def add_img_url(self, url):
+		""" Adds `url` to stack."""
+		self.img_URLs.append(url)
+	
+	def get_img_URLs(self):
+		return self.img_URLs
 
 
 
@@ -120,7 +88,7 @@ def IsValid(url):
 def CheckImgExtension(f_name):
 	if f_name.endswith('.gif') or f_name.endswith('.jpg') or \
 		f_name.endswith('.jpeg') or f_name.endswith('.png') or \
-			f_name.endswith('.bmp') or f_name.endswith('.avif'):
+			f_name.endswith('.bmp'):
 				return True
 	else:
 		return False
@@ -187,31 +155,57 @@ def CheckURLFormat():
 	#Check what king of url inputs user
 	print("OK")
 
+def get_all_images_thread(pathname, stackURLs, imgList):
+	"""
+	Returns all valid images(jpg, jpeg, gif, bmp) URLs on a `url` array
+	"""
+	for url in progbar(stackURLs, 'Process-2: '):
+		getURL = requests.get(url)
+		if CheckStatusCode(getURL) != False:
+			soup = bs(getURL.content, "lxml")
+			all = soup.find_all("img")
+			for img in all:
+				img_url = img.attrs.get("src")
+				if not img_url:
+					continue
+				img_url = urljoin(url, img_url)
+				try:
+					pos = img_url.index("?")
+					img_url = img_url[:pos]
+				except ValueError:
+					pass
+				if CheckImgExtension(img_url):
+					
+					check_format = img_url + '/' + str(pathname)
+					#print(f'check formnat: {check_format} and img_url: {img_url}')
+					if not check_format in stackURLs:
+						if IsValid(img_url):
+							imgList.append(check_format)
+
 def get_all_images2(object):
 	"""
 	Returns all valid images(jpg, jpeg, gif, bmp) URLs on a `url` array
 	"""
-	getURL = requests.get(object.get_url())
-	if CheckStatusCode(getURL) != False:
-		soup = bs(getURL.content, "lxml")
-		all = soup.find_all("img")
-		for img in progbar(all, msg.RECOLECT_IMG):
-			img_url = img.attrs.get("src")
-			if not img_url:
-				continue
-			img_url = urljoin(object.get_url(), img_url)
-			# if url have key-value, remove all after '?'
-			try:
-				pos = img_url.index("?")
-				img_url = img_url[:pos]
-			except ValueError:
-				pass
-			if CheckImgExtension(img_url):
-				check_format = img_url + '/' + str(object.get_pathname())
-				if not check_format in object.get_stackURLs():
-					if IsValid(img_url):
-						object.add_to_stack(check_format)
-	msg.info_msg('Removed ' + str(len(all) - len(object.get_stackURLs())) + ' images.')
+	for url in progbar(object.get_stackURLs(), msg.PURPLEDARK + 'Obtaining img links: '):
+		getURL = requests.get(url)
+		if CheckStatusCode(getURL) != False:
+			soup = bs(getURL.content, "lxml")
+			all = soup.find_all("img")
+			for img in all:
+				img_url = img.attrs.get("src")
+				if not img_url:
+					continue
+				img_url = urljoin(url, img_url)
+				try:
+					pos = img_url.index("?")
+					img_url = img_url[:pos]
+				except ValueError:
+					pass
+				if CheckImgExtension(img_url):
+					check_format = img_url + '/' + str(object.get_pathname())
+					if not check_format in object.get_stackURLs():
+						if IsValid(img_url):
+							object.add_img_url(check_format)
 
 def FormatValidUrl(url):
 	# Apply url._replace(scheme='http') if in input is not set

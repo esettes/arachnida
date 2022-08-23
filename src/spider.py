@@ -1,30 +1,21 @@
 #!/usr/bin/python3
-from distutils.command.clean import clean
-from pickle import EMPTY_LIST
-from threading import Thread, main_thread
+from threading import Thread
 from urllib.parse import urlparse
-from xml.dom.minicompat import EmptyNodeList
 import requests
 import time
 from bs4 import BeautifulSoup as bs
-from utils.requestclass import CheckStatusCode, IsValid, Spider, get_all_images2, CleanURLToQueue
+from utils.requestclass import CheckStatusCode, IsValid, Spider, get_all_images2, CleanURLToQueue, get_all_images_thread
 from utils.listsurlclass import URLlists
 from utils.checker import download
 from utils.utils import SetArgs, progressbar as progbar
 import utils.misc as msg
 from concurrent.futures import ThreadPoolExecutor
-from asyncio import Future, as_completed
 import asyncio
-from typing import List
+from utils.threadclass import CustomThread
 
 def	main():
-	
-	
 	start_time = time.time()
-	#url = 'https://github.com/rsalmei/alive-progress'
-	url = 'https://github.com/trinib/trinib'
-	#url = 'https://realpython.github.io/fake-jobs/'
-	#path_ = "img_folder5" #default
+	url = ""
 	args = SetArgs()
 	levelTo = 0
 	inputURL = ''
@@ -32,33 +23,36 @@ def	main():
 	
 	#spider.set_pathname(path_)
 	if args.path != 'data':
-		print(f'{msg.BLUEAQUA}press new path: {args.path}')
 		spider.set_pathname(args.path)
 	if args.recursive and args.level == 0:
 		# check if is valid link here(?)
-		print(f'{msg.BLUEAQUA}press new url: {args.recursive}')
 		spider.set_url(args.recursive)
 		#spider.set_url(url)
 	if args.recursive and args.level != 0:
 		spider.set_url(args.recursive)
 		#spider.set_url(url)
 		spider.set_level(args.level)
-	
+	temp = ObtainAllHref(spider.get_url(), spider.get_level())
 
-	ObtainAllHref(spider.get_url(), spider.get_level())
-	get_all_images2(spider)
+	for t in temp:
+		spider.add_to_stack(t)
+	#for url in spider.get_stackURLs():#progbar(spider.get_stackURLs(), msg.RECOLECT_IMG):
+	#	spider.set_url(url)
+	#	countAllImg += get_all_images2(spider)
+	time.sleep(0.1)
+	myThread = CustomThread(spider)
+	tempList = []
+	threadGetImages = Thread(target=get_all_images_thread, args=(spider.get_pathname(), spider.get_stackURLs(), tempList))
+	myThread.start()
+	threadGetImages.start()
+	
+	myThread.join()
+	threadGetImages.join()
 
+	thread_submit(tempList)
 	
-	#extractedURLs = get_level_urls(url)
-	#for ext in extractedURLs:
-	#	print(ext)
-	thread_submit(spider.get_stackURLs())
-	#thread_map(spider.get_stackURLs())
-	#try:
-	count = 0
-	# ThreadPool
-	
-	
+	msg.info_msg("\nFinishing...\n")
+	time.sleep(0.5)
 	print(msg.DONE)
 	print("--- %s seconds ---" % (time.time() - start_time))
 	return
@@ -69,12 +63,13 @@ def ObtainAllHref(inputURL, level):
 	countAll = 0
 	net = urlparse(inputURL)
 	main_url = net.netloc
-	print(f'{msg.YELLOW} {main_url} {msg.END}')
+	print(f'{msg.YELLOW}{main_url} {msg.END}')
 	uList = URLlists()
 	uList.add_to_visited(inputURL)
 
 	for v in uList.get_visited():#progbar(uList.get_visited(), 'Obtaining URLs: '):
 		currentLevel += 1
+		#print(f'{msg.INFO}Current level: {currentLevel}')
 		try:
 			req = requests.get(v)
 			if CheckStatusCode(req) == False:
@@ -102,13 +97,13 @@ def ObtainAllHref(inputURL, level):
 						g = g[:pos]
 					except Exception:
 						pass
-					if not g in uList.get_visited():
+					if g not in uList.get_visited():
 						if IsValid(g):
-							count += 1
+							#print(g)
 							uList.add_to_visited(g)
-			print(f'{msg.INFO} Finish URLs extraction.')
-			print(f'{msg.GREY246}Removed {countAll - count} hrefs, parsed {count} hrefs.')
-			return
+			print(f'{msg.INFO}Finish URLs extraction.')
+			print(f'{msg.GREY246}Removed {countAll - count} hrefs, parsed {len(uList.get_visited())} hrefs.')
+			return uList.get_visited()
 		for h in hrefs:#progbar(hrefs, 'Obtaining level ' + str(currentLevel) + ': '):
 			g = h.get('href')
 			temp = g
@@ -124,27 +119,29 @@ def ObtainAllHref(inputURL, level):
 					g = g[:pos]
 				except Exception:
 					pass
-				if not g in uList.get_stack():
+				if g not in uList.get_stack():
 					if IsValid(g):
-						count += 1
+						#print(g)
 						uList.add_to_stack(g)
-		try:
-			uList.remove_from_stack_and_add_to_visit()
-		except Exception:
-			break
-	print(f'{msg.INFO} Finish URLs extraction.')
-	print(f'{msg.GREY246}Removed {countAll - count} hrefs, parsed {count} hrefs.')
+		#if len(uList.get_visited()) + 1 > len(uList.get_visited()):
+		#	continue
+		
+		uList.remove_from_stack_and_add_to_visit()
 
-def thread_submit(stackURLs):
+	print(f'{msg.INFO} Finish URLs extraction.')
+	print(f'{msg.GREY246}Removed {countAll - count} hrefs, parsed {len(uList.get_visited())} hrefs.')
+	#return uList.get_visited()
+
+def thread_submit(urls):
 	with ThreadPoolExecutor(10) as executor:
-		for img in progbar(stackURLs, msg.DOWNLOAD):
+		for img in progbar(urls, msg.DOWNLOAD):
 			f = executor.submit(download, img)
 			#if as_completed(f):
 			#	print("")
-			#time.sleep(0.01)
+	
 
 def thread_map(stackURLs):
-	with ThreadPoolExecutor(10) as executor:
+	with ThreadPoolExecutor(6) as executor:
 		e = executor.map(download, stackURLs)
 		count = list(e)
 		for i in progbar(count, msg.DOWNLOAD):
