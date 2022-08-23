@@ -129,3 +129,5 @@ This method allows me to manage each task, for example, including a loading bar 
 
 [Thread carefully: an introduction to concurrent Python](https://hackaday.com/2018/12/18/thread-carefully-an-introduction-to-concurrent-python/)
 
+[Threading Return Values in Python](https://superfastpython.com/thread-return-values/)
+
