@@ -59,6 +59,7 @@ BAD_STATUS_CODE = f'{B_RED}>Status code: [{END}{B_END}'
 RECOLECT_IMG =  f'{LILA}Recolecting images:\t{END}'
 RECOLECT_HREF =  f'{LILA}Recolecting links:\t{END}'
 DOWNLOAD = f'{LILA}Downloading:\t{END}'
+DOWNLOAD = f'{LILA}Obtaining img links:\t{END}'
 DONE = f'{GREENLOAD}\nDone!{END}'
 
 def status_msg(s):

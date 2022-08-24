@@ -5,33 +5,36 @@ import requests
 import time
 from bs4 import BeautifulSoup as bs
 from utils.requestclass import CheckStatusCode, IsValid, Spider, get_all_images2, CleanURLToQueue, get_all_images_thread
-from utils.listsurlclass import URLlists
+from utils.listsurlclass import URLlists, obtain_all_href, recursive_list
 from utils.checker import download
 from utils.utils import SetArgs, progressbar as progbar, set_log
 import utils.misc as msg
 from concurrent.futures import ThreadPoolExecutor
 from utils.threadclass import CustomThread
 import warnings
+from utils.listsurlclass import URLlists
+
+
 def	main():
 	start_time = time.time()
 	url = ""
 	args = SetArgs()
 	levelTo = 0
-	inputURL = ''
-	spider = Spider(levelTo, url)
-	
+	spider = Spider()
+	currLevel = 0
+	urlLists = URLlists()
+
+
 	#spider.set_pathname(path_)
 	if args.path != 'data':
 		spider.set_pathname(args.path)
 	if args.recursive and args.level == 0:
-		# check if is valid link here(?)
 		spider.set_url(args.recursive)
-		#spider.set_url(url)
 	if args.recursive and args.level != 0:
 		spider.set_url(args.recursive)
-		#spider.set_url(url)
 		spider.set_level(args.level)
 	temp = ObtainAllHref(spider.get_url(), spider.get_level())
+
 
 	for t in temp:
 		spider.add_to_stack(t)
@@ -40,28 +43,87 @@ def	main():
 	#	countAllImg += get_all_images2(spider)
 	time.sleep(0.1)
 
+
 	warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
-	#myThread = CustomThread(spider)
-	tempList = []
-	threadGetImages = Thread(target=get_all_images_thread, args=(spider.get_pathname(), spider.get_stackURLs(), tempList))
-	#myThread.start()
-	threadGetImages.start()
+	allHrefs = []
+	urlLists.set_list_of_lists(spider.get_level())
+	urlLists.set_base_level(spider.get_url())
+	auxList = []
+	trig = False
+	for l in urlLists.get_stack():
+		if trig == True:
+			for i in l:
+				#auxList = recursive_list(i)
+				obtain_all_href(i, auxList)
+				urlLists.set_level_list(auxList)
+				#urlLists.set_level_list(recursive_list(i))
+				trig == True
+		auxList.clear()
+
+
 	
-	#myThread.join()
-	threadGetImages.join()
-	print("--- %s seconds ---" % (time.time() - start_time))
-	start_time1 = time.time()
+	with open('log/logfile-urls_1', 'a') as f:
+		for l in urlLists.get_stack():
+			for i in l:
+				f.write(i + '\n')
+
+	#     start a proces for each list    !!
 	
 
+
+	tempList = []
+	threadGetImages = Thread(target=get_all_images_thread, args=(spider.get_pathname(), spider.get_stackURLs(), tempList))
+	threadGetImages.start()
+	threadGetImages.join()
+	print("--- %s seconds ---" % (time.time() - start_time))
+
+	
+	start_time1 = time.time()
 	thread_submit(tempList)
 	#for img in progbar(tempList, msg.DOWNLOAD):
 	#	download(img)
-	
+
+
 	msg.info_msg("\nFinishing...\n")
 	time.sleep(0.5)
 	print(msg.DONE)
 	print("--- %s seconds ---" % (time.time() - start_time1))
 	return
+
+#def RecursiveList(url):
+	auxList = []
+	myThread = Thread(target=ObtainAllHref2, args=(url, auxList))
+	myThread.start()
+	myThread.join()
+	return auxList
+
+
+#def ObtainAllHref2(url, auxList):
+	getURL = requests.get(url)
+	#if CheckStatusCode(getURL) != False:
+	soup = bs(getURL.content, "lxml")
+	hrefs = soup.find_all("a")
+	net = urlparse(url)
+	main_url = net.netloc
+	for h in hrefs:
+		g = h.get('href')
+		temp = g
+		net = urlparse(temp)
+		if net.netloc == main_url:
+			try:
+				pos = g.index("?")
+				g = g[:pos]
+			except Exception:
+				pass
+			try:
+				pos = g.index("#")
+				g = g[:pos]
+			except Exception:
+				pass
+			if g not in auxList:
+				if IsValid(g):
+					auxList.append(g)
+
 
 def ObtainAllHref(inputURL, level):
 	currentLevel = -1
@@ -75,7 +137,7 @@ def ObtainAllHref(inputURL, level):
 
 	with open('log/logfile_3', 'w') as f:
 		for v in uList.get_visited():#progbar(uList.get_visited(), 'Obtaining URLs: '):
-			currentLevel += 1
+			
 			#print(f'{msg.INFO}Current level: {currentLevel}')
 			try:
 				req = requests.get(v)
@@ -134,7 +196,7 @@ def ObtainAllHref(inputURL, level):
 							f.write('[' + str(level) + '] ' + '[S]' + ': ' + g + '\n')
 			#if len(uList.get_visited()) + 1 > len(uList.get_visited()):
 			#	continue
-			
+			currentLevel += 1
 			uList.remove_from_stack_and_add_to_visit()
 
 		print(f'{msg.INFO} Finish URLs extraction.')
@@ -151,7 +213,6 @@ def thread_submit(urls):
 				myf.write(img_name + '\n')
 				#if as_completed(f):
 				#	print("")
-	
 
 def thread_map(stackURLs):
 	with ThreadPoolExecutor(6) as executor:

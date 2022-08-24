@@ -9,7 +9,6 @@ from urllib.parse import urljoin, urlparse
 from utils.utils import progressbar as progbar
 
 
-
 class Spider(): 
 	"""
 	Main class for web scraping. 
@@ -19,14 +18,15 @@ class Spider():
 		`pathname` By default './data', but modifiyble by user;
 		`imgs` Current level images(?maybe not need this public);
 	"""
-	def __init__(self, levelTo, url):
-		self.url = url
-		self.levelTo = levelTo
+	def __init__(self):
+		self.url = ""
+		self.levelTo = 0
 		self.pathname = ""
 		#self.imgs = imgs
 		self.status_code = 0
 		self.stack_URLs = []	# imgs
 		self.img_URLs = []
+	
 
 	
 	def set_level(self, lev):
@@ -101,6 +101,7 @@ def CleanURLToQueue(url):
 	return url.rsplit('/', 1)[-2]
 
 def CheckStatusCode(url):
+	"""Return `True` if success request, and `False` if fails"""
 	status = url.status_code
 	if status >= 200 and status < 300:
 		return True
@@ -118,7 +119,7 @@ def get_all_images_thread(pathname, stackURLs, imgList):
 	Returns all valid images(jpg, jpeg, gif, bmp) URLs on a `url` array
 	"""
 	with open('log/logfile-thread-2_5', 'w') as f:
-		for url in progbar(stackURLs, 'Process-2: '):
+		for url in progbar(stackURLs, 'Obtaining img links: '):
 			getURL = requests.get(url)
 			if CheckStatusCode(getURL) != False:
 				soup = bs(getURL.content, "lxml")
