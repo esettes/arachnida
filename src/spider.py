@@ -55,12 +55,18 @@ def	main():
 			for i in l:
 				#auxList = recursive_list(i)
 				obtain_all_href(i, auxList)
-				urlLists.set_level_list(auxList)
+				#urlLists.set_level_list(auxList)
 				#urlLists.set_level_list(recursive_list(i))
-				trig == True
+		trig = True
 		auxList.clear()
 
-
+	#convert all lists of hrefs in lists of imgs
+	img_threads = []
+	for l in urlLists.
+	for t in range(0, spider.get_level()):
+		t = Thread(target=get_all_images_thread, args=(spider.get_pathname(), urlLists.get_stack(), tempList))
+        t.start()
+        img_threads.append(t)
 	
 	with open('log/logfile-urls_1', 'a') as f:
 		for l in urlLists.get_stack():
@@ -72,7 +78,7 @@ def	main():
 
 
 	tempList = []
-	threadGetImages = Thread(target=get_all_images_thread, args=(spider.get_pathname(), spider.get_stackURLs(), tempList))
+	threadGetImages = Thread(target=get_all_images_thread, args=(spider.get_pathname(), urlLists.get_stack(), tempList))
 	threadGetImages.start()
 	threadGetImages.join()
 	print("--- %s seconds ---" % (time.time() - start_time))

@@ -9,29 +9,31 @@ class URLlists():
     Manage the extracted URLs
     """
     def __init__(self):
+        self.lists_of_lists = []
         self.stack = []
-
         self.visited = []
         self.level = 0
     
 
     def set_level_list(self, lst):
+        """Set the `lst` of the located `pos` of head list """
         for h in lst:
-            self.stack.append(h)
+            self.lists_of_lists.append(h)
 
     def set_list_of_lists(self, lvl):
         for i in range(0, lvl):
-            self.stack.append([])
+            self.lists_of_lists.append([])
     
     def set_base_level(self, url):
+        """Sets the head list of lists."""
         hrefs = []
         hrefs = recursive_list(url)
         for h in hrefs:
-            self.stack[0].append(h)
+            self.lists_of_lists[0].append(h)
         hrefs.clear()
         
     def get_list_of_lists(self):
-        return self.stack
+        return self.lists_of_lists
 
     def set_level(self, lev):
         self.level = lev
@@ -41,9 +43,7 @@ class URLlists():
 
     def get_visited(self):
         return self.visited
-    
-    def get_stack(self):
-        return self.stack
+
     
     def remove_from_stack_and_add_to_visit(self):
         """ Pops first `url` of stack and appends it to visited."""

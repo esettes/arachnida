@@ -12,6 +12,8 @@ def progressbar(it, prefix="", size=60, out=sys.stdout): # Python3.3+
  `size` The size of th bar; `out` Output 
     """
     count = len(it)
+    if count == 0:
+        count = 1
     try:
         def show(j):
             x = int(size*j/count)
