@@ -118,6 +118,8 @@ def get_all_images_thread(pathname, stackURLs, imgList):
 	"""
 	Returns all valid images(jpg, jpeg, gif, bmp) URLs on a `url` array
 	"""
+	print(msg.BLUELIGHT)
+	print(stackURLs)
 	with open('log/logfile-thread-2_5', 'w') as f:
 		for url in progbar(stackURLs, 'Obtaining img links: '):
 			getURL = requests.get(url)

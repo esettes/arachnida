@@ -62,19 +62,37 @@ def	main():
 
 
 	
-	with open('log/logfile-urls_1', 'a') as f:
-		for l in urlLists.get_stack():
+	count = 0
+	for l in urlLists.get_stack():
+		with open('log/logfile__urls_' + str(count), 'a') as f:
 			for i in l:
 				f.write(i + '\n')
+		count += 0
 
 	#     start a proces for each list    !!
-	
-
-
 	tempList = []
-	threadGetImages = Thread(target=get_all_images_thread, args=(spider.get_pathname(), spider.get_stackURLs(), tempList))
-	threadGetImages.start()
-	threadGetImages.join()
+	#for l in urlLists.get_stack():
+	#	if not l:
+	#		break
+	#	threadGetImages = Thread(target=get_all_images_thread, args=(spider.get_pathname(), l, tempList))
+	#	threadGetImages.start()
+	#	threadGetImages.join()
+
+	#create threads - levels, if level > 8, then create only 7 threads
+	threads = []
+	for l in urlLists.get_stack():
+		if not l:
+			break
+		t = Thread(target=get_all_images_thread, args=(spider.get_pathname(), l, tempList))
+		t.start()
+		threads.append(t)
+	
+	for t in threads:
+		print(msg.INFO + 'Closing thread')
+		t.join()
+	#threadGetImages = Thread(target=get_all_images_thread, args=(spider.get_pathname(), urlLists.get_stack(), tempList))
+	#threadGetImages.start()
+	#threadGetImages.join()
 	print("--- %s seconds ---" % (time.time() - start_time))
 
 	

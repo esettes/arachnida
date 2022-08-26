@@ -20,6 +20,9 @@ class URLlists():
             self.stack.append(h)
 
     def set_list_of_lists(self, lvl):
+        if lvl == 0:
+            self.stack.append([])
+            return
         for i in range(0, lvl):
             self.stack.append([])
     
