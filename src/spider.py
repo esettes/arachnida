@@ -55,44 +55,32 @@ def	main():
 			for i in l:
 				#auxList = recursive_list(i)
 				obtain_all_href(i, auxList)
-				urlLists.set_level_list(auxList)
+				#urlLists.set_level_list(auxList)
 				#urlLists.set_level_list(recursive_list(i))
-				trig == True
+		trig = True
 		auxList.clear()
 
-
+	#convert all lists of hrefs in lists of imgs
+	img_threads = []
+	for l in urlLists.
+	for t in range(0, spider.get_level()):
+		t = Thread(target=get_all_images_thread, args=(spider.get_pathname(), urlLists.get_stack(), tempList))
+        t.start()
+        img_threads.append(t)
 	
-	count = 0
-	for l in urlLists.get_stack():
-		with open('log/logfile__urls_' + str(count), 'a') as f:
+	with open('log/logfile-urls_1', 'a') as f:
+		for l in urlLists.get_stack():
 			for i in l:
 				f.write(i + '\n')
-		count += 0
 
 	#     start a proces for each list    !!
-	tempList = []
-	#for l in urlLists.get_stack():
-	#	if not l:
-	#		break
-	#	threadGetImages = Thread(target=get_all_images_thread, args=(spider.get_pathname(), l, tempList))
-	#	threadGetImages.start()
-	#	threadGetImages.join()
-
-	#create threads - levels, if level > 8, then create only 7 threads
-	threads = []
-	for l in urlLists.get_stack():
-		if not l:
-			break
-		t = Thread(target=get_all_images_thread, args=(spider.get_pathname(), l, tempList))
-		t.start()
-		threads.append(t)
 	
-	for t in threads:
-		print(msg.INFO + 'Closing thread')
-		t.join()
-	#threadGetImages = Thread(target=get_all_images_thread, args=(spider.get_pathname(), urlLists.get_stack(), tempList))
-	#threadGetImages.start()
-	#threadGetImages.join()
+
+
+	tempList = []
+	threadGetImages = Thread(target=get_all_images_thread, args=(spider.get_pathname(), urlLists.get_stack(), tempList))
+	threadGetImages.start()
+	threadGetImages.join()
 	print("--- %s seconds ---" % (time.time() - start_time))
 
 	
