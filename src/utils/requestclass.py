@@ -113,10 +113,13 @@ def CheckURLFormat():
 	#Check what king of url inputs user
 	print("OK")
 
-def get_all_images_new(pathname, stackURLs, imgList):
+def get_all_images_new(pathname, stackURLs):
 	"""
 	Appends to imgList all images(jpg, jpeg, gif, bmp) URLs on a `url` array
+
+	Return: `imgList` with extracted images urls to download
 	"""
+	imgList = []
 	with open('log/logfile-new_img_0', 'w') as f:
 		for url in progbar(stackURLs, 'Obtaining img links: '):
 			#print(f'{msg.INFO} Url in get all img new: {url}')
@@ -142,6 +145,7 @@ def get_all_images_new(pathname, stackURLs, imgList):
 								imgList.append(check_format)
 								#stackURLs.append(check_format)
 								f.write(img_url + '  ::   with folder: ' + check_format +  '\n')
+	return imgList
 
 
 

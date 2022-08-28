@@ -37,8 +37,8 @@ def	main():
 
 	warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
 	allHrefs = []
-	urlLists.set_list_of_lists(spider.get_level())
-	urlLists.set_list_of_images(spider.get_level())
+	#urlLists.set_list_of_lists(spider.get_level())
+	#urlLists.set_list_of_images(spider.get_level())
 	urlLists.set_base_level_images(spider.get_pathname(), spider.get_url())
 	urlLists.set_base_level(spider.get_url())
 	

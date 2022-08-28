@@ -21,18 +21,27 @@ class URLlists():
 
     def set_level_list(self, lst, pos):
         """Set the `lst` of the located list `pos` of the main list """
+        i = 0
         with open('log/logfile-level_list_0', 'w') as f:
-            for h in lst:
-                f.write(h)
-                f.write('\n')
-                self.lists_of_lists[0][pos].append(h)
+            for l in self.get_list_of_lists():
+                if i == pos:
+                    for h in lst:
+                        f.write(h)
+                        f.write('\n')
+                        l.append(h)
+                i += 1
 
+    def append_new_list(self):
+        self.lists_of_lists.append([])
+    
+    def append_new_img_list(self):
+        self.lists_of_images.append([])
 
     def set_list_of_lists(self, lvl):
         if lvl == 0:
             self.lists_of_lists.append([])
             return
-        for i in range(0, lvl):
+        for i in range(lvl):
             self.lists_of_lists.append([])
     
 
@@ -40,7 +49,7 @@ class URLlists():
         if lvl == 0:
             self.lists_of_images.append([])
             return
-        for i in range(0, lvl):
+        for i in range(lvl):
             self.lists_of_images.append([])
     
 
@@ -52,7 +61,7 @@ class URLlists():
             for h in hrefs:
                 f.write(h)
                 f.write('\n')
-                self.lists_of_lists[0].append(h)
+                self.lists_of_lists[1].append(h)
             hrefs.clear()
     
 
@@ -66,17 +75,21 @@ class URLlists():
             for h in imgs:
                 f.write(h)
                 f.write('\n')
-                self.lists_of_images[0].append(h)
+                self.lists_of_images[1].append(h)
         imgs.clear()
-    
+
 
     def set_level_list_images(self, lst, pos):
-        """Set the `lst` of the located list `pos` of the main list """
+        """Set the `lst` of the list located in `pos`"""
+        i = 0
         with open('log/logfile-set_level_lst_img_0', 'w') as f:
-            for h in lst:
-                f.write(h)
-                f.write('\n')
-                self.lists_of_images[0][pos].append(h)
+            for img_lst in self.get_lists_of_images():
+                if i == pos:
+                    for h in lst:
+                        f.write(h)
+                        f.write('\n')
+                        img_lst.append(h)
+                i += 1
         
 
     def get_list_of_lists(self):
@@ -87,10 +100,23 @@ class URLlists():
         return self.lists_of_images
     
     def get_base_level(self):
-        return self.lists_of_lists[0]
+        for l in self.get_list_of_lists():
+            return l
     
     def get_level(self, pos):
-        return self.lists_of_lists[0][pos]
+        i = 0
+        for l in self.get_list_of_lists():
+            if i == pos:
+                return l
+            i += 1
+    
+    def get_level_images(self, pos):
+        i = 0
+        for l in self.get_lists_of_images():
+            if i == pos:
+                return l
+            i += 1
+    
 
     def set_level(self, lev):
         self.level = lev
@@ -120,10 +146,14 @@ class URLlists():
 
 
 
-def obtain_all_href(urls, auxList):
+def obtain_all_href(urls):
     """
     Appends to `auxList` all hrefs obtained from `urls`
+
+    Return: `auxList` of extracted urls
     """
+
+    auxList = []
     for url in progbar(urls, 'Obtaining hrefs: '):
         getURL = requests.get(url)
         if CheckStatusCode(getURL) != False:
@@ -153,6 +183,7 @@ def obtain_all_href(urls, auxList):
                     if g not in auxList:
                         if IsValid(g):
                             auxList.append(g)
+    return auxList
 
 def obtain_base_href(url):
     """
