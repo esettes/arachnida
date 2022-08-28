@@ -1,8 +1,11 @@
 from threading import Thread
 import requests
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup as bs
-from utils.requestclass import CheckStatusCode, IsValid
+import utils.misc as msg
+from utils.requestclass import CheckImgExtension, CheckStatusCode, IsValid, get_all_images_new, get_all_images_thread
+
+from utils.utils import progressbar as progbar
 
 class URLlists(): 
     """
@@ -10,30 +13,84 @@ class URLlists():
     """
     def __init__(self):
         self.lists_of_lists = []
+        self.lists_of_images = []
         self.stack = []
         self.visited = []
         self.level = 0
     
 
-    def set_level_list(self, lst):
-        """Set the `lst` of the located `pos` of head list """
-        for h in lst:
-            self.lists_of_lists.append(h)
+    def set_level_list(self, lst, pos):
+        """Set the `lst` of the located list `pos` of the main list """
+        with open('log/logfile-level_list_0', 'w') as f:
+            for h in lst:
+                f.write(h)
+                f.write('\n')
+                self.lists_of_lists[0][pos].append(h)
+
 
     def set_list_of_lists(self, lvl):
+        if lvl == 0:
+            self.lists_of_lists.append([])
+            return
         for i in range(0, lvl):
             self.lists_of_lists.append([])
     
+
+    def set_list_of_images(self, lvl):
+        if lvl == 0:
+            self.lists_of_images.append([])
+            return
+        for i in range(0, lvl):
+            self.lists_of_images.append([])
+    
+
     def set_base_level(self, url):
         """Sets the head list of lists."""
         hrefs = []
-        hrefs = recursive_list(url)
-        for h in hrefs:
-            self.lists_of_lists[0].append(h)
-        hrefs.clear()
+        hrefs = obtain_base_href(url)
+        with open('log/logfile-set_base_level_0', 'w') as f:
+            for h in hrefs:
+                f.write(h)
+                f.write('\n')
+                self.lists_of_lists[0].append(h)
+            hrefs.clear()
+    
+
+    def set_base_level_images(self, pathname, urlList):
+        """Sets the head list of lists with the images url."""
+        print(f'{msg.INFO} urlList in base_level_images: {urlList}')
+        with open('log/logfile-set_base_level_img_0', 'w') as f:
+            imgs = []
+            imgs = get_base_images(pathname, urlList)
+            print(f'{msg.INFO} imgs in base_level_images: {imgs}')
+            for h in imgs:
+                f.write(h)
+                f.write('\n')
+                self.lists_of_images[0].append(h)
+        imgs.clear()
+    
+
+    def set_level_list_images(self, lst, pos):
+        """Set the `lst` of the located list `pos` of the main list """
+        with open('log/logfile-set_level_lst_img_0', 'w') as f:
+            for h in lst:
+                f.write(h)
+                f.write('\n')
+                self.lists_of_images[0][pos].append(h)
         
+
     def get_list_of_lists(self):
         return self.lists_of_lists
+
+
+    def get_lists_of_images(self):
+        return self.lists_of_images
+    
+    def get_base_level(self):
+        return self.lists_of_lists[0]
+    
+    def get_level(self, pos):
+        return self.lists_of_lists[0][pos]
 
     def set_level(self, lev):
         self.level = lev
@@ -43,7 +100,6 @@ class URLlists():
 
     def get_visited(self):
         return self.visited
-
     
     def remove_from_stack_and_add_to_visit(self):
         """ Pops first `url` of stack and appends it to visited."""
@@ -63,42 +119,99 @@ class URLlists():
         self.visited.append(url)
 
 
-    
-   
 
-def recursive_list(url):
+def obtain_all_href(urls, auxList):
+    """
+    Appends to `auxList` all hrefs obtained from `urls`
+    """
+    for url in progbar(urls, 'Obtaining hrefs: '):
+        getURL = requests.get(url)
+        if CheckStatusCode(getURL) != False:
+            soup = bs(getURL.content, "lxml")
+            hrefs = soup.find_all("a")
+            net = url
+            net = urlparse(net)
+            main_url = net.netloc
+            
+            for h in hrefs:
+                g = h.get('href')
+                #if CheckStatusCode(g):
+                #    print(g)
+                temp = g
+                net = urlparse(temp)
+                if net.netloc == main_url:
+                    try:
+                        pos = g.index("?")
+                        g = g[:pos]
+                    except Exception:
+                        pass
+                    try:
+                        pos = g.index("#")
+                        g = g[:pos]
+                    except Exception:
+                        pass
+                    if g not in auxList:
+                        if IsValid(g):
+                            auxList.append(g)
+
+def obtain_base_href(url):
+    """
+    Returns all hrefs obtained from `url`
+    """
     auxList = []
-    obtain_all_href(url, auxList)
-    #myThread = Thread(target=obtain_all_href, args=(url, auxList))
-    #myThread.start()
-    #myThread.join()
+    getURL = requests.get(url)
+    if CheckStatusCode(getURL) != False:
+        soup = bs(getURL.content, "lxml")
+        hrefs = soup.find_all("a")
+        net = url
+        net = urlparse(net)
+        main_url = net.netloc
+        
+        for h in hrefs:
+            g = h.get('href')
+            #if CheckStatusCode(g):
+            #    print(g)
+            temp = g
+            net = urlparse(temp)
+            if net.netloc == main_url:
+                try:
+                    pos = g.index("?")
+                    g = g[:pos]
+                except Exception:
+                    pass
+                try:
+                    pos = g.index("#")
+                    g = g[:pos]
+                except Exception:
+                    pass
+                if g not in auxList:
+                    if IsValid(g):
+                        auxList.append(g)
     return auxList
 
-def obtain_all_href(url, auxList):
+def get_base_images(pathname, url):
+    """
+    Return list all images(jpg, jpeg, gif, bmp) URLs on a `url` array
+    """
+    print(f'{msg.INFO} Url in get all img new: {url}')
+    imgList = []
     getURL = requests.get(url)
-    #if CheckStatusCode(getURL) != False:
-    soup = bs(getURL.content, "lxml")
-    hrefs = soup.find_all("a")
-    net = urlparse(url)
-    main_url = net.netloc
-    
-    for h in hrefs:
-        g = h.get('href')
-        #if CheckStatusCode(g):
-        #    print(g)
-        temp = g
-        net = urlparse(temp)
-        if net.netloc == main_url:
+    if CheckStatusCode(getURL) != False:
+        soup = bs(getURL.content, "lxml")
+        all = soup.find_all("img")
+        for img in all:
+            img_url = img.attrs.get("src")
+            if not img_url:
+                continue
+            img_url = urljoin(url, img_url)
             try:
-                pos = g.index("?")
-                g = g[:pos]
-            except Exception:
+                pos = img_url.index("?")
+                img_url = img_url[:pos]
+            except ValueError:
                 pass
-            try:
-                pos = g.index("#")
-                g = g[:pos]
-            except Exception:
-                pass
-            if g not in auxList:
-                if IsValid(g):
-                    auxList.append(g)
+            if CheckImgExtension(img_url):
+                check_format = img_url + '/' + str(pathname)
+                if check_format in imgList:
+                    if IsValid(img_url):
+                        imgList.append(check_format)
+    return imgList

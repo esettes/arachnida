@@ -4,13 +4,12 @@ from urllib.parse import urlparse
 import requests
 import time
 from bs4 import BeautifulSoup as bs
-from utils.requestclass import CheckStatusCode, IsValid, Spider, get_all_images2, CleanURLToQueue, get_all_images_thread
-from utils.listsurlclass import URLlists, obtain_all_href, recursive_list
+from utils.requestclass import CheckStatusCode, IsValid, Spider, get_all_images2, CleanURLToQueue, get_all_images_new, get_all_images_thread
+from utils.listsurlclass import URLlists, obtain_all_href
 from utils.checker import download
 from utils.utils import SetArgs, progressbar as progbar, set_log
 import utils.misc as msg
 from concurrent.futures import ThreadPoolExecutor
-from utils.threadclass import CustomThread
 import warnings
 from utils.listsurlclass import URLlists
 
@@ -33,61 +32,82 @@ def	main():
 	if args.recursive and args.level != 0:
 		spider.set_url(args.recursive)
 		spider.set_level(args.level)
-	temp = ObtainAllHref(spider.get_url(), spider.get_level())
-
-
-	for t in temp:
-		spider.add_to_stack(t)
-	#for url in spider.get_stackURLs():#progbar(spider.get_stackURLs(), msg.RECOLECT_IMG):
-	#	spider.set_url(url)
-	#	countAllImg += get_all_images2(spider)
-	time.sleep(0.1)
+	#temp = ObtainAllHref(spider.get_url(), spider.get_level())
 
 
 	warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
 	allHrefs = []
 	urlLists.set_list_of_lists(spider.get_level())
+	urlLists.set_list_of_images(spider.get_level())
+	urlLists.set_base_level_images(spider.get_pathname(), spider.get_url())
 	urlLists.set_base_level(spider.get_url())
-	auxList = []
+	
+	firstsuRLS = urlLists.get_base_level()
+	auxListHREF = []
+	auxListIMG = []
+	url_threads = []
+	img_threads = []
 	trig = False
-	for l in urlLists.get_stack():
+	listPos = -1
+	auxListHREF = urlLists.get_base_level()
+	auxListIMG = urlLists.get_lists_of_images()
+	for l in urlLists.get_list_of_lists():
+		if trig == False:
+			print(f'{msg.INFO} l: {l}')
+			#t_h = Thread(target=obtain_all_href, args=(l, auxListHREF))
+			#t_s = Thread(target=get_all_images_new, args=(spider.get_pathname(), l, auxListIMG))
+			#t_h.start()
+			#t_s.start()
+			#t_h.join()
+			#t_s.join()
 		if trig == True:
 			for i in l:
-				#auxList = recursive_list(i)
-				obtain_all_href(i, auxList)
-				#urlLists.set_level_list(auxList)
-				#urlLists.set_level_list(recursive_list(i))
+				print(f'{msg.INFO} i: {i}')
+				t_h = Thread(target=obtain_all_href, args=(i, auxListHREF))
+				t_s = Thread(target=get_all_images_new, args=(spider.get_pathname(), i, auxListIMG))
+				t_h.start()
+				t_s.start()
+				#t_h.join()
+				#t_s.join()
+				print(f'{msg.INFO} auxListHREF: {auxListHREF}')
+				print(f'{msg.INFO} auxListIMG: {auxListIMG}')
+				tu = Thread(target=urlLists.set_level_list, args=(auxListHREF, listPos))
+				tu.start()
+				url_threads.append(tu)
+				time.sleep(0.2)
+				ti = Thread(target=urlLists.set_level_list_images, args=(auxListIMG, listPos))
+				ti.start()
+				img_threads.append(ti)
+				auxListHREF.clear()
+				auxListIMG.clear()
 		trig = True
-		auxList.clear()
-
-	#convert all lists of hrefs in lists of imgs
-	img_threads = []
-	for l in urlLists.
-	for t in range(0, spider.get_level()):
-		t = Thread(target=get_all_images_thread, args=(spider.get_pathname(), urlLists.get_stack(), tempList))
-        t.start()
-        img_threads.append(t)
+		listPos += 1
+			
 	
-	with open('log/logfile-urls_1', 'a') as f:
-		for l in urlLists.get_stack():
-			for i in l:
-				f.write(i + '\n')
+	for tu in url_threads:
+		tu.join()
 
-	#     start a proces for each list    !!
-	
+	for ti in img_threads:
+		ti.join()
 
-
-	tempList = []
-	threadGetImages = Thread(target=get_all_images_thread, args=(spider.get_pathname(), urlLists.get_stack(), tempList))
-	threadGetImages.start()
-	threadGetImages.join()
+	time.sleep(0.5)
 	print("--- %s seconds ---" % (time.time() - start_time))
 
-	
+
 	start_time1 = time.time()
-	thread_submit(tempList)
-	#for img in progbar(tempList, msg.DOWNLOAD):
-	#	download(img)
+	trig = False
+	for l in urlLists.get_lists_of_images():
+		if trig == True:
+			for lst in l:
+				print(lst)
+				if lst:
+					thread_submit(lst)
+		if trig == False:
+			if l:
+				thread_submit(l)
+			trig = True
+	
+
 
 
 	msg.info_msg("\nFinishing...\n")
@@ -96,15 +116,8 @@ def	main():
 	print("--- %s seconds ---" % (time.time() - start_time1))
 	return
 
-#def RecursiveList(url):
-	auxList = []
-	myThread = Thread(target=ObtainAllHref2, args=(url, auxList))
-	myThread.start()
-	myThread.join()
-	return auxList
 
-
-#def ObtainAllHref2(url, auxList):
+#def ObtainAllHref2(url, auxListHREF):
 	getURL = requests.get(url)
 	#if CheckStatusCode(getURL) != False:
 	soup = bs(getURL.content, "lxml")
@@ -126,9 +139,9 @@ def	main():
 				g = g[:pos]
 			except Exception:
 				pass
-			if g not in auxList:
+			if g not in auxListHREF:
 				if IsValid(g):
-					auxList.append(g)
+					auxListHREF.append(g)
 
 
 def ObtainAllHref(inputURL, level):

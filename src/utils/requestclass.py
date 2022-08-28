@@ -109,15 +109,48 @@ def CheckStatusCode(url):
 	return False
 
 
-
 def CheckURLFormat():
 	#Check what king of url inputs user
 	print("OK")
+
+def get_all_images_new(pathname, stackURLs, imgList):
+	"""
+	Appends to imgList all images(jpg, jpeg, gif, bmp) URLs on a `url` array
+	"""
+	with open('log/logfile-new_img_0', 'w') as f:
+		for url in progbar(stackURLs, 'Obtaining img links: '):
+			#print(f'{msg.INFO} Url in get all img new: {url}')
+			getURL = requests.get(url)
+			if CheckStatusCode(getURL) != False:
+				soup = bs(getURL.content, "lxml")
+				all = soup.find_all("img")
+				for img in all:
+					img_url = img.attrs.get("src")
+					if not img_url:
+						continue
+					img_url = urljoin(url, img_url)
+					try:
+						pos = img_url.index("?")
+						img_url = img_url[:pos]
+					except ValueError:
+						pass
+					if CheckImgExtension(img_url):
+						check_format = img_url + '/' + str(pathname)
+						#print(f'check formnat: {check_format} and img_url: {img_url}')
+						if not check_format in stackURLs and not check_format in imgList:
+							if IsValid(img_url):
+								imgList.append(check_format)
+								#stackURLs.append(check_format)
+								f.write(img_url + '  ::   with folder: ' + check_format +  '\n')
+
+
 
 def get_all_images_thread(pathname, stackURLs, imgList):
 	"""
 	Returns all valid images(jpg, jpeg, gif, bmp) URLs on a `url` array
 	"""
+	print(msg.BLUELIGHT)
+	print(stackURLs)
 	with open('log/logfile-thread-2_5', 'w') as f:
 		for url in progbar(stackURLs, 'Obtaining img links: '):
 			getURL = requests.get(url)
@@ -142,7 +175,7 @@ def get_all_images_thread(pathname, stackURLs, imgList):
 							if IsValid(img_url):
 								imgList.append(check_format)
 								#stackURLs.append(check_format)
-								f.write(img_url + '   ///////   with folder: ' + check_format +  '\n')
+								f.write(img_url + '  ::   with folder: ' + check_format +  '\n')
 
 def get_all_images2(object):
 	"""
@@ -174,3 +207,4 @@ def get_all_images2(object):
 def FormatValidUrl(url):
 	# Apply url._replace(scheme='http') if in input is not set
 	url._replace(scheme='http')
+
