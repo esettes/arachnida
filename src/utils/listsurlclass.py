@@ -29,6 +29,7 @@ class URLlists():
                         f.write(h)
                         f.write('\n')
                         l.append(h)
+                    return
                 i += 1
 
     def append_new_list(self):
@@ -89,6 +90,7 @@ class URLlists():
                         f.write(h)
                         f.write('\n')
                         img_lst.append(h)
+                    return
                 i += 1
         
 
@@ -146,44 +148,44 @@ class URLlists():
 
 
 
-def obtain_all_href(urls):
+def obtain_all_href(url, auxList):
     """
     Appends to `auxList` all hrefs obtained from `urls`
 
     Return: `auxList` of extracted urls
     """
 
-    auxList = []
-    for url in progbar(urls, 'Obtaining hrefs: '):
-        getURL = requests.get(url)
-        if CheckStatusCode(getURL) != False:
-            soup = bs(getURL.content, "lxml")
-            hrefs = soup.find_all("a")
-            net = url
-            net = urlparse(net)
-            main_url = net.netloc
-            
-            for h in hrefs:
-                g = h.get('href')
-                #if CheckStatusCode(g):
-                #    print(g)
-                temp = g
-                net = urlparse(temp)
-                if net.netloc == main_url:
-                    try:
-                        pos = g.index("?")
-                        g = g[:pos]
-                    except Exception:
-                        pass
-                    try:
-                        pos = g.index("#")
-                        g = g[:pos]
-                    except Exception:
-                        pass
-                    if g not in auxList:
-                        if IsValid(g):
-                            auxList.append(g)
-    return auxList
+    #auxList = []
+    #for url in progbar(urls, 'Obtaining hrefs: '):
+    getURL = requests.get(url)
+    if CheckStatusCode(getURL) != False:
+        soup = bs(getURL.content, "lxml")
+        hrefs = soup.find_all("a")
+        net = url
+        net = urlparse(net)
+        main_url = net.netloc
+        
+        for h in hrefs:
+            g = h.get('href')
+            #if CheckStatusCode(g):
+            #    print(g)
+            temp = g
+            net = urlparse(temp)
+            if net.netloc == main_url:
+                try:
+                    pos = g.index("?")
+                    g = g[:pos]
+                except Exception:
+                    pass
+                try:
+                    pos = g.index("#")
+                    g = g[:pos]
+                except Exception:
+                    pass
+                if g not in auxList:
+                    if IsValid(g):
+                        auxList.append(g)
+    #return auxList
 
 def obtain_base_href(url):
     """
@@ -230,6 +232,7 @@ def get_base_images(pathname, url):
     if CheckStatusCode(getURL) != False:
         soup = bs(getURL.content, "lxml")
         all = soup.find_all("img")
+
         for img in all:
             img_url = img.attrs.get("src")
             if not img_url:

@@ -1,4 +1,7 @@
 import requests
+import utils.misc as msg
+
+from utils.requestclass import CheckStatusCode
 
 def download(url):#, path_):
     """
@@ -18,4 +21,16 @@ def download(url):#, path_):
        # print(img_name)
     with open(str(path_) + '/' + img_name, 'wb') as f:
         f.write(response.content)
+
+def download2(path_, urls):
+    """
+    Downloads the `urls` passed as param. and puts it in the folder `pathname`
+    """
+    img_name = url.rsplit('/', 1)[-1]
+    for url in urls:
+        response = requests.get(url)#, timeout=3)
+        if CheckStatusCode(response):
+            msg.STATUS_CODE(response.status_code)
+        with open(str(path_) + '/' + img_name, 'wb') as f:
+            f.write(response.content)
 
