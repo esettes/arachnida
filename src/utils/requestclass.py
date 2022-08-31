@@ -4,13 +4,8 @@ from bs4 import BeautifulSoup as bs
 from urllib.parse import urljoin, urlparse
 
 class Spider(): 
-	"""
-	Main class for web scraping. 
-
-	Arguments:
-		`levelTo` Indicated by user, to which level scrap;
-		`pathname` By default './data', but modifiyble by user;
-		`imgs` Current level images(?maybe not need this public);
+	""" 
+	Set the scrapper properties.
 	"""
 	def __init__(self):
 		self.url = ""

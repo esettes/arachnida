@@ -1,8 +1,8 @@
-#!/usr/bin/python3
+#!/usr/bin/python3.9
 from concurrent.futures import ThreadPoolExecutor
 from threading import Thread
 import time
-from utils.utils import SetArgs, progressbar as progbar
+from utils.spiderutils import SetArgs, progressbar as progbar
 from utils.requestclass import Spider, get_all_images_new
 from utils.listsurlclass import URLlists, obtain_all_href
 import utils.misc as msg
