@@ -37,10 +37,10 @@ class Spider():
 	def get_pathname(self):
 		return self.pathname
 
-def CreateDownloadFolder(self, pathname):
-	if not os.path.isdir(pathname):
-		os.makedirs(pathname)
-	return pathname
+	def CreateDownloadFolder(self, pathname):
+		if not os.path.isdir(pathname):
+			os.makedirs(pathname)
+		return pathname
 
 def IsValid(url):
 	"""
@@ -74,16 +74,24 @@ def CheckURLFormat():
 
 def get_all_images_new(pathname, url, imgList):
 	"""
-	Appends to `imgList` all images(jpg, jpeg, gif, bmp) founded in `stackURLs`
+	Appends to `imgList` all images(jpg, jpeg, gif, bmp) founded in `url`
 	"""
 	with open('log/logfile-new_img_0', 'w') as f:
 		getURL = requests.get(url)
 		if CheckStatusCode(getURL) != False:
 			soup = bs(getURL.content, "lxml")
 			all = soup.find_all("img")
+			#print (all)
 
 			for img in all:
-				img_url = img.attrs.get("src")
+				try:
+					img_url = img.attrs.get("src")
+				except:
+					pass
+				try:
+					img_url = img.attrs.get("data-src")
+				except:
+					pass
 				#temp = img_url
 				#net = urlparse(temp)
 				#if net.netloc == main_url:

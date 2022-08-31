@@ -26,7 +26,6 @@ def	main():
     currLevel = 0
     urlLists = URLlists()
 
-    
     if args.path != 'data':
         spider.set_pathname(args.path)
     if args.recursive and args.level == 0:
@@ -49,24 +48,11 @@ def	main():
         thread_submit(imgs, currLevel)
         currLevel += 1
         nxtLevel = currLevel
-        time.sleep(0.5)
         recursive_obtain_urls(nxtLevel, urlLists, spider, urls)
         time.sleep(0.5)
         recursive_obtain_imgs(currLevel, urlLists, spider, imgs)
     elif currLevel == spider.get_level():
         thread_submit(imgs, currLevel)
-
-    with open('log/log_hrefs_list_1', 'a') as f:
-        for h in urlLists.get_list_of_lists():
-            for item in h:
-                f.write(item)
-                f.write('\n')
-    
-    with open('log/log_images_list_1', 'a') as f:
-        for h in urlLists.get_lists_of_images():
-            for item in h:
-                f.write(item)
-                f.write('\n')
     
 
     time.sleep(0.5)
