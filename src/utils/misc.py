@@ -3,6 +3,7 @@ BLUEAQUA = '\033[38;5;50m'
 GREENWEED = '\033[38;5;10m'
 
 LILA = '\033[38;5;104m'
+PINK = '\033[38;5;207m'
 PINKDARK = '\033[38;5;05m'
 GREENLOAD = '\033[38;5;77m'
 DOTLOAD =  '\033[38;5;237m'
@@ -32,6 +33,8 @@ BOLD = '\033[1m'
 
 ''' MSG Prefixes '''
 INFO = f'{BLUEAQUA}Info {END}'
+INFO2 = f'{ORANGE}Info {END}'
+INFO3 = f'{PINK}Info {END}'
 KEY = f'{ORANGE}Keystroke{END}'
 PASTE = f'{BLUE}Paste{END}'
 WARN = f'{ORANGE}Warning{END}'
@@ -60,7 +63,16 @@ def info_msg(s):
 	print(GREY246 + s + END)
 
 def lightinfo_msg(s):
-	print(f'{BLUEAQUA} {s}')
+	print(f'{BLUEAQUA} {s} {END}')
+
+def info_msg_purple(s):
+	print(f'{LILA} {s} {END}')
+
+def info_msg_orange(s):
+	print(f'{ORANGE} {s} {END}')
+    
+def err_msg(s):
+	print(f'{RED}[ERROR] {END}{s}')
 
 CUSTOM_TAGS = {
 	0x0100: "ImageWidth",

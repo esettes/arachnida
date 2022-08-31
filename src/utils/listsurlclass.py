@@ -1,7 +1,8 @@
 import requests
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup as bs
 from utils.requestclass import CheckStatusCode, IsValid
+import utils.misc as msg
 
 
 class URLlists(): 
@@ -21,7 +22,6 @@ class URLlists():
     def append_new_img_list(self):
         self.lists_of_images.append([])
 
-
     def set_level_list(self, lst, pos):
         """Set the `lst` of the located list `pos` of the main list """
         i = 0
@@ -35,7 +35,7 @@ class URLlists():
                     return
                 i += 1
 
-    def set_level_list_images(self, lst, pos):
+    def set_level_list_images(self, lst, pos, main_url):
         """Set the `lst` of the list located in `pos`"""
         i = 0
         with open('log/logfile-set_level_lst_img_0', 'w') as f:
@@ -68,6 +68,12 @@ class URLlists():
                 return l
             i += 1
 
+    def check_base_url(self, url, main_url):
+        net = url
+        net = urlparse(net)
+        if main_url == net.netloc:
+            return True
+        return False
 
 def obtain_all_href(url, auxList):
     """

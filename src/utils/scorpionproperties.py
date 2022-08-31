@@ -1,4 +1,5 @@
-
+from os import listdir
+from os.path import isfile, join
 
 class ScorpionProperties:
     def __init__(self):
@@ -9,6 +10,9 @@ class ScorpionProperties:
 
     def set_path(self, p):
         self.path = p
+    
+    def get_path(self):
+        return self.path
 
     def set_logpath(self, lp):
         self.logpath = lp
@@ -18,6 +22,10 @@ class ScorpionProperties:
 
     def get_logpath(self):
         return self.logpath
-
-    def set_source_list(self, path):
-        
+    
+    def get_source(self, path):
+        for f in listdir(path):
+            img = join(path, f)
+            if isfile(img):
+                self.source.append(img)
+        return self.source

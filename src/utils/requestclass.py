@@ -2,6 +2,8 @@ import requests
 import os
 from bs4 import BeautifulSoup as bs
 from urllib.parse import urljoin, urlparse
+import utils.misc as msg
+from os.path import join
 
 class Spider(): 
 	""" 
@@ -11,12 +13,18 @@ class Spider():
 		self.url = ""
 		self.levelTo = 0
 		self.pathname = ""
+		self.main_url = ""
 	
 	def set_level(self, lev):
 		self.levelTo = lev
 	
 	def set_url(self, u):
-		self.url = u
+		if u[:3] == 'www':
+			u = 'https://' + u
+			print(u)
+		if u[:3] == 'www' and u[:4] == 'http':
+			self.url = u
+			return
 
 	def set_pathname(self, p):
 		path_ = self.CreateDownloadFolder(p)
@@ -36,6 +44,15 @@ class Spider():
 		if not os.path.isdir(pathname):
 			os.makedirs(pathname)
 		return pathname
+	
+	def set_base_url(self, url):
+		net = url
+		net = urlparse(net)
+		self.main_url = net.scheme + '://' + net.netloc
+	
+	def get_main_url(self):
+		return self.main_url
+
 
 def IsValid(url):
 	"""
@@ -48,6 +65,7 @@ def IsValid(url):
 	return bool(parsed.netloc) and bool(parsed.scheme)
 
 def CheckImgExtension(f_name):
+	print(f'{msg.RED} In CheckImgExtension, f_name: {f_name} {msg.END}')
 	if f_name.endswith('.gif') or f_name.endswith('.jpg') or \
 		f_name.endswith('.jpeg') or f_name.endswith('.png') or \
 			f_name.endswith('.bmp'):
@@ -67,7 +85,7 @@ def CheckURLFormat():
 	#Check what king of url inputs user
 	print("OK")
 
-def get_all_images_new(pathname, url, imgList):
+def get_all_images_new(pathname, url, imgList, main_url):
 	"""
 	Appends to `imgList` all images(jpg, jpeg, gif, bmp) founded in `url`
 	"""
@@ -76,23 +94,23 @@ def get_all_images_new(pathname, url, imgList):
 		if CheckStatusCode(getURL) != False:
 			soup = bs(getURL.content, "lxml")
 			all = soup.find_all("img")
-			#print (all)
 
 			for img in all:
+				trigger = False
 				try:
 					img_url = img.attrs.get("src")
-				except:
+					img_url = img_url = FormatUrl(img_url, main_url)
+					trigger = True
+				except Exception:
 					pass
 				try:
-					img_url = img.attrs.get("data-src")
-				except:
+					if trigger == False:
+						img_url = img.attrs.get("data-src")
+						img_url = FormatUrl(img_url, main_url)
+				except Exception:
 					pass
-				#temp = img_url
-				#net = urlparse(temp)
-				#if net.netloc == main_url:
 				if not img_url:
 					continue
-				img_url = urljoin(url, img_url)
 				try:
 					pos = img_url.index("?")
 					img_url = img_url[:pos]
@@ -106,7 +124,14 @@ def get_all_images_new(pathname, url, imgList):
 							f.write(img_url + '\n')
 
 
-def FormatUrlWithHttp(url):
+def FormatUrl(img_url, main_url):
+	temp = img_url
+	net = urlparse(temp)
+	if net.netloc != main_url:
+		if img_url[0] == '/':
+			img_url = main_url + img_url
+			return img_url
+	return img_url
 	# Apply url._replace(scheme='http') if in input is not set
-	url._replace(scheme='http')
+	#url._replace(scheme='http')
 

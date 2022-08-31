@@ -2,12 +2,12 @@
 from concurrent.futures import ThreadPoolExecutor
 from threading import Thread
 import time
+import warnings
 from utils.spiderutils import SetArgs, progressbar as progbar
-from utils.requestclass import Spider, get_all_images_new
+from utils.requestclass import Spider, get_all_images_new, FormatUrl
 from utils.listsurlclass import URLlists, obtain_all_href
 import utils.misc as msg
 from utils.downloadimg import download
-from multiprocessing import cpu_count
 
 #import ipdb
 #ipdb.set_trace()
@@ -18,8 +18,6 @@ img_threads = []
 download_threads = []
 
 def	main():
-    num_cores = cpu_count()
-    print(f'{msg.INFO}Num cores: {num_cores}')
     start_time = time.time()
     args = SetArgs()
     spider = Spider()
@@ -34,6 +32,23 @@ def	main():
         spider.set_url(args.recursive)
         spider.set_level(args.level)
 
+    if not spider.get_url():
+        print(spider.get_url())
+        msg.err_msg('Invalid URL.')
+        return
+
+    warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
+    spider.set_base_url(spider.get_url())
+    main_url = spider.get_main_url()
+
+    url = spider.get_url()
+    #spider.set_base_url(FormatUrl(url, ))
+
+
+    #if spider.get_url() != 
+
+
+
     urls = []
     urlLists.append_new_list()
     obtain_all_href(spider.get_url(), urls)
@@ -41,8 +56,8 @@ def	main():
 
     imgs = []
     urlLists.append_new_img_list()
-    get_all_images_new(spider.get_pathname(), spider.get_url(), imgs)
-    urlLists.set_level_list_images(imgs, 0)
+    get_all_images_new(spider.get_pathname(), spider.get_url(), imgs, main_url)
+    urlLists.set_level_list_images(imgs, 0, main_url)
 
     if currLevel < spider.get_level():
         thread_submit(imgs, currLevel)
@@ -50,7 +65,7 @@ def	main():
         nxtLevel = currLevel
         recursive_obtain_urls(nxtLevel, urlLists, spider, urls)
         time.sleep(0.5)
-        recursive_obtain_imgs(currLevel, urlLists, spider, imgs)
+        recursive_obtain_imgs(currLevel, urlLists, spider, imgs, main_url)
     elif currLevel == spider.get_level():
         thread_submit(imgs, currLevel)
     
@@ -89,23 +104,24 @@ def recursive_obtain_urls(currLevel, urlLists, spider, urls):
     return
 
 
-def recursive_obtain_imgs(currLevel, urlLists, spider, imgs):
+def recursive_obtain_imgs(currLevel, urlLists, spider, imgs, main_url):
 
     thread_submit(imgs, currLevel)
     while currLevel <= spider.get_level():
         im = []
         urlLists.append_new_img_list()
         for url in progbar( urlLists.get_list_of_lists()[currLevel], msg.RECOLECT_IMG):
-            threadImgs = Thread(target=get_all_images_new, args=(spider.get_pathname(), url, im))
+            
+            threadImgs = Thread(target=get_all_images_new, args=(spider.get_pathname(), url, im, main_url))
             threadImgs.start()
             img_threads.append(threadImgs)
         
         for t in img_threads:
             t.join()
-        urlLists.set_level_list_images(im, currLevel)
+        urlLists.set_level_list_images(im, currLevel, main_url)
 
         currLevel += 1
-        recursive_obtain_imgs(currLevel, urlLists, spider, im)
+        recursive_obtain_imgs(currLevel, urlLists, spider, im, main_url)
     return
 
 def thread_submit(urls, lvl):
