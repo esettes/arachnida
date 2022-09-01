@@ -1,0 +1,217 @@
+
+
+* * * [ tests/test_bmp01.bmp ] * * * 
+Format: BMP 
+Description: Windows Bitmap
+Height: 768
+Width: 1024
+Mode: P
+Size: 769.1
+Animate: False
+Frames: 1
+
+
+* * * [ tests/test_bmp02.bmp ] * * * 
+Format: BMP 
+Description: Windows Bitmap
+Height: 480
+Width: 640
+Mode: P
+Size: 150.1
+Animate: False
+Frames: 1
+
+
+* * * [ tests/test_gif01.gif ] * * * 
+Format: GIF 
+Description: Compuserve GIF
+Height: 400
+Width: 314
+Mode: P
+Size: 263.6
+Animate: True
+Frames: 4
+
+
+* * * [ tests/test_gif02.gif ] * * * 
+Format: GIF 
+Description: Compuserve GIF
+Height: 400
+Width: 400
+Mode: P
+Size: 4012.3
+Animate: True
+Frames: 68
+
+
+* * * [ tests/test_img01.jpg ] * * * 
+Format: JPEG 
+Description: JPEG (ISO 10918)
+Height: 768
+Width: 549
+Mode: RGB
+Size: 134.6
+Animate: False
+Frames: 1
+Copyright:Kensaku KURANAGA
+ExifOffset:108
+ImageDescription:Shinagawa, Tokyo. September 2021. 12488
+
+
+* * * [ tests/test_img02.jpg ] * * * 
+Format: JPEG 
+Description: JPEG (ISO 10918)
+Height: 810
+Width: 537
+Mode: RGB
+Size: 87.2
+Animate: False
+Frames: 1
+Copyright:R Israel Mnedoza C
+ExifOffset:102
+Orientation:1
+Artist:R  Israel Mendoza C
+
+
+* * * [ tests/test_img03.jpg ] * * * 
+Format: JPEG 
+Description: JPEG (ISO 10918)
+Height: 600
+Width: 400
+Mode: RGB
+Size: 60.1
+Animate: False
+Frames: 1
+Copyright:Copywrite 2019
+ExifOffset:88
+Orientation:1
+Artist:Megan Tom
+
+
+* * * [ tests/test_img04.jpg ] * * * 
+Format: JPEG 
+Description: JPEG (ISO 10918)
+Height: 2000
+Width: 1125
+Mode: RGB
+Size: 651.7
+Animate: False
+Frames: 1
+ResolutionUnit:2
+ExifOffset:206
+Make:Apple
+Model:iPhone X
+Software:Instagram
+Orientation:1
+DateTime:2021:05:26 16:36:50
+XResolution:72.0
+YResolution:72.0
+HostComputer:iPhone X
+
+
+* * * [ tests/test_img05.jpg ] * * * 
+Format: MPO 
+Description: MPO (CIPA DC-007)
+Height: 3240
+Width: 4320
+Mode: RGB
+Size: 5727.1
+Animate: True
+Frames: 2
+PrintImageMatching:b'PrintIM\x000300\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00\x01\x01\x02\x00\x00\x00'
+ResolutionUnit:2
+ExifOffset:258
+ImageDescription:                               
+Make:SONY
+Model:DSC-W350
+Orientation:1
+DateTime:2012:09:04 12:49:01
+YCbCrPositioning:2
+XResolution:72.0
+YResolution:72.0
+
+
+* * * [ tests/test_img06.jpg ] * * * 
+Format: JPEG 
+Description: JPEG (ISO 10918)
+Height: 564
+Width: 752
+Mode: RGB
+Size: 66.3
+Animate: False
+Frames: 1
+ResolutionUnit:2
+ExifOffset:228
+Make:Research In Motion
+Model:BlackBerry 9100
+Software:Rim Exif Version1.00a
+Orientation:1
+DateTime:2012:01:02 10:55:26
+YCbCrPositioning:2
+XResolution:72.0
+YResolution:72.0
+
+
+* * * [ tests/test_img07.jpg ] * * * 
+Format: JPEG 
+Description: JPEG (ISO 10918)
+Height: 720
+Width: 960
+Mode: RGB
+Size: 239.0
+Animate: False
+Frames: 1
+ResolutionUnit:2
+ExifOffset:194
+Make:Apple
+Model:iPod touch
+Software:5.0.1
+Orientation:6
+DateTime:2012:09:21 22:04:45
+YCbCrPositioning:1
+XResolution:72.0
+YResolution:72.0
+
+
+* * * [ tests/test_img08.jpg ] * * * 
+Format: JPEG 
+Description: JPEG (ISO 10918)
+Height: 480
+Width: 640
+Mode: RGB
+Size: 229.5
+Animate: False
+Frames: 1
+PrintImageMatching:b"PrintIM\x000300\x00\x00!\x00\x01\x00\x16\x00\x16\x00\x02\x00\x01\x00\x00\x00\x03\x00\xd6\x00\x00\x00\x07\x00\x00\x00\x00\x00\x08\x00\x00\x00\x00\x00\t\x00\x00\x00\x00\x00\n\x00\x00\x00\x00\x00\x0b\x00\x1e\x01\x00\x00\x0c\x00\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x0e\x006\x01\x00\x00\x00\x01\x05\x00\x00\x00\x01\x01\xff\x00\x00\x00\x02\x01\x83\x00\x00\x00\x03\x01\x83\x00\x00\x00\x04\x01\x83\x00\x00\x00\x05\x01\x83\x00\x00\x00\x06\x01\x83\x00\x00\x00\x07\x01\x83\x83\x83\x00\x10\x01\x80\x00\x00\x00\x00\x02\x00\x00\x00\x00\x07\x02\x00\x00\x00\x00\x08\x02\x00\x00\x00\x00\t\x02\x00\x00\x00\x00\n\x02\x00\x00\x00\x00\x0b\x02F\x01\x00\x00\r\x02\x00\x00\x00\x00\x00\x03\x05\x00\x00\x00\x01\x03\xff\x00\x00\x00\x02\x03\x83\x00\x00\x00\x03\x03\x83\x00\x00\x00\x06\x03\x83\x00\x00\x00\x10\x03\x80\x00\x00\x00\t\x11\x00\x00\x10'\x00\x00\x0b\x0f\x00\x00\x10'\x00\x00\x97\x05\x00\x00\x10'\x00\x00\xb0\x08\x00\x00\x10'\x00\x00\x01\x1c\x00\x00\x10'\x00\x00^\x02\x00\x00\x10'\x00\x00\x8b\x00\x00\x00\x10'\x00\x00\xcb\x03\x00\x00\x10'\x00\x00\xe5\x1b\x00\x00\x10'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+ResolutionUnit:2
+ExifOffset:586
+Make:PENTAX Corporation
+Model:PENTAX Optio S6
+Software:Optio S6 Ver 1.00
+Orientation:1
+DateTime:2010:10:19 00:47:20
+YCbCrPositioning:2
+XResolution:72.0
+YResolution:72.0
+
+
+* * * [ tests/test_png01.png ] * * * 
+Format: PNG 
+Description: Portable network graphics
+Height: 512
+Width: 512
+Mode: P
+Size: 5.1
+Animate: False
+Frames: 1
+
+
+* * * [ tests/test_png02.png ] * * * 
+Format: PNG 
+Description: Portable network graphics
+Height: 297
+Width: 484
+Mode: RGBA
+Size: 143.6
+Animate: False
+Frames: 1

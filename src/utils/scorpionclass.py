@@ -1,5 +1,7 @@
+from genericpath import isdir
 from os import listdir
 from os.path import isfile, join
+import utils.misc as msg
 
 class ScorpionProperties:
     def __init__(self):
@@ -24,8 +26,11 @@ class ScorpionProperties:
         return self.logpath
     
     def get_source(self, path):
-        for f in listdir(path):
-            img = join(path, f)
-            if isfile(img):
-                self.source.append(img)
-        return self.source
+        if isdir(path):
+            for f in listdir(path):
+                img = join(path, f)
+                if isfile(img):
+                    self.source.append(img)
+            return self.source
+        else:
+            msg.err_msg('Invalid or non existing path.')

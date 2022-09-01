@@ -1,4 +1,6 @@
 #!/usr/bin/python3.9
+from genericpath import isdir
+from importlib.resources import path
 from os.path import split, splitext
 import sys
 import warnings
@@ -7,7 +9,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 from PIL.ExifTags import TAGS
 from utils.misc import CUSTOM_TAGS
 from utils.scorpionclass import ScorpionProperties
-from utils.scorpionutils import SetScorpionArgs
+from utils.scorpionutils import SetScorpionArgs, getMetadata
 import utils.misc as msg
 from datetime import date
 from datetime import datetime as dt
@@ -17,6 +19,7 @@ imgExtension = {
     '.jpg',
     '.jpeg',
     '.png',
+    '.gif',
     '.bmp'
 }
 
@@ -24,7 +27,6 @@ def main(argv):
 
     args = SetScorpionArgs()
     scorpion = ScorpionProperties()
-    tags = TAGS
     images = []
 
     madrid = pytz.timezone("Europe/Madrid")
@@ -37,30 +39,32 @@ def main(argv):
         scorpion.set_path(args.path)
     if args.logpath != 'log_images':
         scorpion.set_logpath(args.logpath)
-    if args.all:
-        tags = CUSTOM_TAGS
     images = scorpion.get_source(scorpion.get_path())
-    print(scorpion.get_logpath())
 
+    pathname_ = str(scorpion.get_logpath()) + '/' + datename.isoformat() + '_' + s + '.txt'
 
-    with open(str(scorpion.get_logpath()) + '/' + datename.isoformat() + '_' + s + '.txt', 'a') as f:
-        for img in images:
-            imgSplit = split(img)
-            ext = splitext(imgSplit[1])
-            if ext[1] in imgExtension:
-                f.write('\n\n* * * [ ' + img +  ' ] * * * \n')
-                try:
-                    image = Image.open(img)
-                except Exception:
-                    continue
-                exifdata = image.getexif()
-                for tagid in exifdata:
-                    tagname = tags.get(tagid, tagid)
-                    value = exifdata.get(tagid)
+    if isdir(pathname_):
+        with open(pathname_, 'a') as f:
+            for img in images:
+                imgSplit = split(img)
+                ext = splitext(imgSplit[1])
+                if ext[1] in imgExtension:
+                    f.write('\n\n* * * [ ' + img +  ' ] * * * \n')
+                    getMetadata(f, img)
                     try:
-                        f.write(str(tagname[:25]) + ':' + str(value) + '\n')
+                        image = Image.open(img)
                     except Exception:
-                        pass
+                        continue
+                    exifdata = image.getexif()
+                    for tagid in exifdata:
+                        tagname = TAGS.get(tagid, tagid)
+                        value = exifdata.get(tagid)
+                        try:
+                            f.write(str(tagname[:25]) + ':' + str(value) + '\n')
+                        except Exception:
+                            pass
+    else:
+        return
     return
 
 if __name__ == '__main__':

@@ -10,7 +10,7 @@ import argparse
 from pathlib import Path
 from argparse import RawTextHelpFormatter
 
-from utils.requestclass import get_all_images_new
+from utils.spiderclass import get_all_images_new
 
 url_threads = []
 img_threads = []
@@ -47,13 +47,13 @@ def SetArgs():
     head = """  """
     parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter, description=head)
     group = parser.add_argument_group('Required argument')
-    group.add_argument('-r','--recursive', type=str, metavar='URL', nargs='?', default=None, help="Download recursively images from passed URL.")
-    parser.add_argument('-l','--level', type=int, metavar='LEVEL', nargs='?', const=5, default=0, choices=range(0,16), help="Depth level to \
+    parser.add_argument('-r','--recursive', type=str, metavar='URL', nargs='?', required=False, default=None, help="Download recursively images from passed URL.")
+    parser.add_argument('-l','--level', type=int, metavar='LEVEL', nargs='?', required=False, const=5, default=0, choices=range(0,16), help="Depth level to \
 download images from web, if not indicate flag, default is 0. \
 If indicate flag but not set a value for it, the default val is 5")
 
     #excludeGroup = parser.add_mutually_exclusive_group()
-    parser.add_argument('-p','--path', type=Path, metavar='PATH', default='data', help="Change the default path to store downloaded images. Thefault path is /data")
+    parser.add_argument('-p','--path', type=Path, metavar='PATH', required=False, default='data', help="Change the default path to store downloaded images. Thefault path is /data")
     args = parser.parse_args()
     return args
 

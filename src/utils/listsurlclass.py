@@ -1,7 +1,7 @@
 import requests
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup as bs
-from utils.requestclass import CheckStatusCode, IsValid
+from utils.spiderclass import CheckStatusCode, IsValid
 import utils.misc as msg
 
 
