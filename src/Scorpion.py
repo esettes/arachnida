@@ -1,12 +1,24 @@
 #!/usr/bin/python3.9
+from os.path import split, splitext
 import sys
 import warnings
-from PIL import Image
+from PIL import Image, ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 from PIL.ExifTags import TAGS
 from utils.misc import CUSTOM_TAGS
-from utils.scorpionproperties import ScorpionProperties
+from utils.scorpionclass import ScorpionProperties
 from utils.scorpionutils import SetScorpionArgs
 import utils.misc as msg
+from datetime import date
+from datetime import datetime as dt
+import pytz
+
+imgExtension = {
+    '.jpg',
+    '.jpeg',
+    '.png',
+    '.bmp'
+}
 
 def main(argv):
 
@@ -14,6 +26,11 @@ def main(argv):
     scorpion = ScorpionProperties()
     tags = TAGS
     images = []
+
+    madrid = pytz.timezone("Europe/Madrid")
+    datename = date.today()
+    now = dt.now(madrid)
+    s = now.strftime("%I:%M:%S")
 
     warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
     if args.path != 'data':
@@ -23,20 +40,27 @@ def main(argv):
     if args.all:
         tags = CUSTOM_TAGS
     images = scorpion.get_source(scorpion.get_path())
+    print(scorpion.get_logpath())
 
 
-
-    for img in images:
-        print(f'{msg.INFO} {img}')
-        image = Image.open(img)
-        exifdata = image.getexif()
-        for tagid in exifdata:
-            # getting the tag name instead of tag id
-            tagname = tags.get(tagid, tagid)
-            # passing the tagid to get its respective value
-            value = exifdata.get(tagid)
-            # printing the final result
-            print(f"{tagname:25}: {value}")
+    with open(str(scorpion.get_logpath()) + '/' + datename.isoformat() + '_' + s + '.txt', 'a') as f:
+        for img in images:
+            imgSplit = split(img)
+            ext = splitext(imgSplit[1])
+            if ext[1] in imgExtension:
+                f.write('\n\n* * * [ ' + img +  ' ] * * * \n')
+                try:
+                    image = Image.open(img)
+                except Exception:
+                    continue
+                exifdata = image.getexif()
+                for tagid in exifdata:
+                    tagname = tags.get(tagid, tagid)
+                    value = exifdata.get(tagid)
+                    try:
+                        f.write(str(tagname[:25]) + ':' + str(value) + '\n')
+                    except Exception:
+                        pass
     return
 
 if __name__ == '__main__':

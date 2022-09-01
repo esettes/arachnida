@@ -1,0 +1,39 @@
+
+
+* * * [ test_images/1888487_10201821685896209_2328670258710543297_n.jpg ] * * * 
+
+
+* * * [ test_images/IMG-20200318-WA0002.jpg ] * * * 
+ResolutionUnit:2
+ExifOffset:170
+Software:Adobe Photoshop Lightroom Classic 9.2 (Windows)
+DateTime:2020:03:18 16:35:47
+XResolution:240.0
+YResolution:240.0
+
+
+* * * [ test_images/hamjpg1998-0471.jpg ] * * * 
+ResolutionUnit:2
+ExifOffset:216
+Make:Canon
+Model:Canon EOS 1200D
+Software:Adobe Photoshop Lightroom Classic 9.1 (Windows)
+DateTime:2020:01:02 21:48:22
+XResolution:240.0
+YResolution:240.0
+
+
+* * * [ test_images/marrr.jpg ] * * * 
+ImageWidth:4160
+ImageLength:3120
+BitsPerSample:(8, 8, 8)
+ResolutionUnit:2
+ExifOffset:240
+DeviceSettingDescription:b'ipp\x00'
+Make:HUAWEI
+Model:ALE-L21
+Software:PhotoScape
+DateTime:2015:12:24 07:15:11
+YCbCrPositioning:1
+XResolution:72.0
+YResolution:72.0

@@ -1,9 +1,8 @@
 import requests
 import os
 from bs4 import BeautifulSoup as bs
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 import utils.misc as msg
-from os.path import join
 
 class Spider(): 
 	""" 
@@ -21,7 +20,7 @@ class Spider():
 	def set_url(self, u):
 		if u[:3] == 'www':
 			u = 'https://' + u
-			print(u)
+			self.url = u
 		if u[:3] == 'www' and u[:4] == 'http':
 			self.url = u
 			return
@@ -65,7 +64,6 @@ def IsValid(url):
 	return bool(parsed.netloc) and bool(parsed.scheme)
 
 def CheckImgExtension(f_name):
-	print(f'{msg.RED} In CheckImgExtension, f_name: {f_name} {msg.END}')
 	if f_name.endswith('.gif') or f_name.endswith('.jpg') or \
 		f_name.endswith('.jpeg') or f_name.endswith('.png') or \
 			f_name.endswith('.bmp'):
@@ -81,9 +79,6 @@ def CheckStatusCode(url):
 	#msg.status_msg(str(status))
 	return False
 
-def CheckURLFormat():
-	#Check what king of url inputs user
-	print("OK")
 
 def get_all_images_new(pathname, url, imgList, main_url):
 	"""
@@ -134,4 +129,23 @@ def FormatUrl(img_url, main_url):
 	return img_url
 	# Apply url._replace(scheme='http') if in input is not set
 	#url._replace(scheme='http')
+
+def CheckBaseurl(url):
+	if IsValid(url):
+		try:
+			getURL = requests.get(url)
+		except Exception:
+			msg.err_msg("URL doesn't exist.")
+			return False
+		if CheckStatusCode(getURL) == False:
+			msg.err_msg("Bad status code.")
+			return False
+	elif not IsValid(url):
+		msg.err_msg('Invalid URL.')
+		return False
+	if not url:
+		msg.err_msg('Invalid URL.')
+		return False
+
+	return True
 

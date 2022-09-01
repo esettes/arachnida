@@ -107,3 +107,7 @@ CUSTOM_TAGS = {
     0xC68B: "OriginalRawFileName",
     0xC68C: "OriginalRawFileData",
 }
+
+CUSTOM_TAGS = {
+    
+}
