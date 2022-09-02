@@ -84,6 +84,8 @@ def get_all_images_new(pathname, url, imgList, main_url):
 	"""
 	Appends to `imgList` all images(jpg, jpeg, gif, bmp) founded in `url`
 	"""
+	if not os.path.isdir('log'):
+			os.makedirs('log')
 	with open('log/logfile-new_img_0', 'w') as f:
 		getURL = requests.get(url)
 		if CheckStatusCode(getURL) != False:
@@ -112,7 +114,7 @@ def get_all_images_new(pathname, url, imgList, main_url):
 				except ValueError:
 					pass
 				if CheckImgExtension(img_url):
-					check_format = img_url + '/' + str(pathname)
+					check_format = img_url + 'ñ' + str(pathname)
 					if not check_format in imgList:
 						if IsValid(img_url):
 							imgList.append(check_format)
@@ -137,11 +139,15 @@ def CheckBaseurl(url):
 		except Exception:
 			msg.err_msg("URL doesn't exist.")
 			return False
-		if CheckStatusCode(getURL) == False:
-			msg.err_msg("Bad status code.")
+		try:
+			if CheckStatusCode(getURL) == False:
+				msg.err_msg("Bad status code.")
+				return False
+		except Exception:
 			return False
-	elif not IsValid(url):
-		msg.err_msg('Invalid URL.')
+	if IsValid(url) == False:
+		print(url)
+		msg.err_msg('Invalid URL. Check if you write it correctly and it starts with "www".')
 		return False
 	if not url:
 		msg.err_msg('Invalid URL.')

@@ -3,7 +3,7 @@ from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup as bs
 from utils.spiderclass import CheckStatusCode, IsValid
 import utils.misc as msg
-
+import os
 
 class URLlists(): 
     """
@@ -25,28 +25,22 @@ class URLlists():
     def set_level_list(self, lst, pos):
         """Set the `lst` of the located list `pos` of the main list """
         i = 0
-        with open('log/logfile-level_list_0', 'w') as f:
-            for l in self.get_list_of_lists():
-                if i == pos:
-                    for h in lst:
-                        f.write(h)
-                        f.write('\n')
-                        l.append(h)
-                    return
-                i += 1
+        for l in self.get_list_of_lists():
+            if i == pos:
+                for h in lst:
+                    l.append(h)
+                return
+            i += 1
 
     def set_level_list_images(self, lst, pos, main_url):
         """Set the `lst` of the list located in `pos`"""
         i = 0
-        with open('log/logfile-set_level_lst_img_0', 'w') as f:
-            for img_lst in self.get_lists_of_images():
-                if i == pos:
-                    for h in lst:
-                        f.write(h)
-                        f.write('\n')
-                        img_lst.append(h)
-                    return
-                i += 1
+        for img_lst in self.get_lists_of_images():
+            if i == pos:
+                for h in lst:
+                    img_lst.append(h)
+                return
+            i += 1
 
     def get_list_of_lists(self):
         return self.lists_of_lists

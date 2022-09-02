@@ -47,8 +47,9 @@ def SetArgs():
     head = """  """
     parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter, description=head)
     group = parser.add_argument_group('Required argument')
-    parser.add_argument('-r','--recursive', type=str, metavar='URL', nargs='?', required=False, default=None, help="Download recursively images from passed URL.")
-    parser.add_argument('-l','--level', type=int, metavar='LEVEL', nargs='?', required=False, const=5, default=0, choices=range(0,16), help="Depth level to \
+    parser.add_argument('url', metavar='<URL>', type=str)
+    parser.add_argument('-r','--recursive', action='store_true', help="Download recursively images from passed URL.")
+    parser.add_argument('-l','--level', type=int, metavar='N', nargs='?', const=5, default=5, choices=range(0,16), help="Depth level to \
 download images from web, if not indicate flag, default is 0. \
 If indicate flag but not set a value for it, the default val is 5")
 
@@ -73,18 +74,17 @@ def set_log(listType, level, url):
 def recursive_obtain_urls(currLevel, urlLists, spider, urls):
 
     while currLevel <= spider.get_level():
-        print(f'{msg.INFO}Current level: [{currLevel}]')
-
+        #print(f'{msg.GREY}Current level: [{currLevel}]')
+        msg.info_msg(f'Current level in url: [{currLevel}]')
         u = []
         urlLists.append_new_list()
-
-        with open('log/log_hrefs_list_1', 'a') as f:
-            for url in progressbar(urls, msg.OBATAIN_URLS):
-                f.write(url)
-                f.write('\n')
-                threadHref = Thread(target=obtain_all_href, args=(url, u))
-                threadHref.start()
-                url_threads.append(threadHref)
+        #with open('log/hrefs_list_' , 'a') as f:
+        for url in progressbar(urls, msg.OBATAIN_URLS):
+            #f.write(url)
+            #f.write('\n')
+            threadHref = Thread(target=obtain_all_href, args=(url, u))
+            threadHref.start()
+            url_threads.append(threadHref)
 
         for t in url_threads:
             t.join()
@@ -120,9 +120,9 @@ def recursive_obtain_imgs(currLevel, urlLists, spider, imgs, main_url):
 
 def thread_submit(urls, lvl):
     with ThreadPoolExecutor(10) as executor:
-        with open('log/logimg_1', 'a') as myf:
-            for img in progressbar(urls, "[" + str(lvl) + "] " + msg.DOWNLOAD):
+        #with open('log/images_downloaded', 'a') as myf:
+            for img in progressbar(urls, msg.GREY246 + "[" + str(lvl) + "] " + msg.END + msg.DOWNLOAD):
                 f = executor.submit(download, img)
-                beforename =  img.rsplit('/', 1)[-2]
-                img_name = beforename.rsplit('/', 1)[-1]
-                myf.write(img_name + '\n')
+                #beforename =  img.rsplit('/', 1)[-2]
+                #img_name = beforename.rsplit('/', 1)[-1]
+                #myf.write(img_name + '\n')

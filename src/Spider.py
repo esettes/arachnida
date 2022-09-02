@@ -16,33 +16,17 @@ def	main(argv):
     urlLists = URLlists()
     recursiveSearch = False
 
-
     if args.path != 'data':
         spider.set_pathname(args.path)
     if args.level != 0:
         spider.set_level(args.level)
-    if args.recursive: # and args.level == 0:
-        spider.set_url(args.recursive)
+    if args.recursive:
         recursiveSearch = True
+    #if args.url:
+    spider.set_url(args.url)
 
-    if args.recursive == None and args.level == 0:
-        spider.set_url(argv[1])
-    if args.recursive == None and args.level != 0:
-        msg.err_msg("Non recursive search didn't allow level")
-        return
-    if args.recursive == None and args.path != 'data':
-        try:
-            if CheckBaseurl(argv[1]):
-                spider.set_url(argv[1])
-            else:
-                print("URL must be the first parameter ( ./spider www.mywebpage.com -p myfolder/ )")
-                return
-        except Exception:
-            return
-    #if args.recursive: #and args.level != 0:
-        #spider.set_url(args.recursive)
-        #spider.set_level(args.level)
-
+    print('level ' + str(spider.get_level()))
+    
 
     if CheckBaseurl(spider.get_url()) == False:
         return
@@ -53,8 +37,7 @@ def	main(argv):
 
     url = spider.get_url()
 
-    spider.set_base_url(FormatUrl(url, ))
-    #if spider.get_url() != 
+
 
     urls = []
     urlLists.append_new_list()
@@ -68,15 +51,19 @@ def	main(argv):
 
     if recursiveSearch:
         if currLevel < spider.get_level():
+            print(imgs)
             thread_submit(imgs, currLevel)
             currLevel += 1
             nxtLevel = currLevel
+            print(' ')
             recursive_obtain_urls(nxtLevel, urlLists, spider, urls)
             time.sleep(0.5)
             recursive_obtain_imgs(currLevel, urlLists, spider, imgs, main_url)
         #elif currLevel == spider.get_level():
         #    thread_submit(imgs, currLevel)
-    thread_submit(imgs, currLevel)
+    elif recursiveSearch == False:
+        thread_submit(imgs, currLevel)
+    print('level ' + str(spider.get_level()))
 
 
     time.sleep(0.5)

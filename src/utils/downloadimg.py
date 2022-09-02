@@ -6,10 +6,13 @@ def download(url):
 
     ** Set pathname before call executor.map progress bar **
     """
-    path_ = url.rsplit('/', 1)[-1]
-    beforename =  url.rsplit('/', 1)[-2]
-    response = requests.get(beforename, timeout=3)
-    img_name = beforename.rsplit('/', 1)[-1]
-    with open(str(path_) + '/' + img_name, 'wb') as f:
-        f.write(response.content)
+    path_ = url.rsplit('ñ', 1)[-1]
+    beforename =  url.rsplit('ñ', 1)[-2]
+    try:
+        response = requests.get(beforename, timeout=3)
+        img_name = beforename.rsplit('/', 1)[-1]
+        with open(str(path_) + '/' + img_name, 'wb') as f:
+            f.write(response.content)
+    except Exception:
+        pass
 
